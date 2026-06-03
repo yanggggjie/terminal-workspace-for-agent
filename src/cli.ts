@@ -38,7 +38,7 @@ program
       "\n" +
       "Workflow:  sess start  →  (act → obs screen stable)*  →  sess kill\n" +
       "Observability: agents use obs; humans use sess watch.\n" +
-      "Docs: https://github.com/yanggggjie/terminal-tool-for-agent\n"
+      "Docs: https://github.com/yanggggjie/terminal-workspace-for-agent\n"
   )
   .version(version);
 
