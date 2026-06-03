@@ -13,6 +13,8 @@ const required = [
   "dist/watch-ui/index.html",
   "dist/watch-ui/app.js",
   "dist/watch-ui/logo.png",
+  "dist/watch-ui/vendor/xterm.css",
+  "dist/watch-ui/vendor/xterm.js",
   "skills/twa/SKILL.md",
 ];
 

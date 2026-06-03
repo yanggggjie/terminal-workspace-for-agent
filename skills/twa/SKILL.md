@@ -21,12 +21,23 @@ On failure: one line `error: <reason>` (exit 1).
 **Workflow:** `sess start` → `(act → obs screen stable)*` → `sess kill`
 
 ```bash
-twa sess start --sess=sub-agent --cmd="claude"
+twa sess start --sess=sub-agent --cmd="claude code"
 twa obs screen stable --sess=sub-agent
-twa act send text --sess=sub-agent --txt="run tests"
+twa act send text --sess=sub-agent --txt="run all tests and fix failures"
 twa obs screen stable --sess=sub-agent
 twa sess kill --sess=sub-agent
 ```
+
+## Session lifecycle by task type
+
+| Kind | Examples | Kill when done? |
+|------|----------|-----------------|
+| Interactive CLI (one-shot) | `npm create vite@latest` | **Yes** — `twa sess kill --sess=…` |
+| Interactive TUI (one-shot) | `lazygit` | **Yes** |
+| Interactive agent | Claude Code, agent CLIs | **No** until task complete (kill loses context) |
+| Long-running + observe | `npm run dev` | **No** while watching logs; kill when dev done |
+
+Name sessions as **one word** or **2–3 words joined by `-`** (`dev`, `vite-once`, `lazy-git`, `sub-agent`). When the process exits, the session is removed automatically. Use **`twa sess kill`** to stop early; **`twa sess list`** shows only running sessions.
 
 - `act` / `obs` always need `--sess=` and an existing session.
 - Session names: **one lowercase word**, or **2–3 words** joined by `-` (e.g. `dev`, `vite-once`, `npm-run-dev`).
@@ -96,3 +107,5 @@ twa sess kill --sess=dev
 ```
 
 Every twa call must block until it exits — one at a time.
+
+
