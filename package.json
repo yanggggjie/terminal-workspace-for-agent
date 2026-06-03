@@ -1,0 +1,63 @@
+{
+  "name": "terminal-workspace-for-agent",
+  "version": "0.1.0",
+  "description": "terminal-workspace-for-agent (twa) — terminal workspace for AI agents. Command: twa. Package: terminal-workspace-for-agent.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yanggggjie/terminal-workspace-for-agent.git"
+  },
+  "homepage": "https://github.com/yanggggjie/terminal-workspace-for-agent#readme",
+  "bugs": {
+    "url": "https://github.com/yanggggjie/terminal-workspace-for-agent/issues"
+  },
+  "keywords": [
+    "tui",
+    "pty",
+    "terminal",
+    "workspace",
+    "automation",
+    "agent",
+    "cli",
+    "xterm"
+  ],
+  "bin": {
+    "twa": "./dist/cli.js"
+  },
+  "files": [
+    "dist/",
+    "skills/",
+    "docs/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm run clean:dist && tsc && cp -r src/watch-ui dist/watch-ui && cp docs/terminal-workspace-for-agent-logo.png dist/watch-ui/logo.png && chmod +x dist/cli.js",
+    "clean:dist": "rm -rf dist",
+    "clean": "npm run clean:dist",
+    "clean:all": "rm -rf node_modules package-lock.json dist",
+    "dev": "tsc --watch",
+    "prepack": "npm run build",
+    "version": "node scripts/sync-skill-version.js",
+    "prepublishOnly": "node scripts/verify.js",
+    "test": "node scripts/verify.js",
+    "release": "node scripts/release.js",
+    "start": "node dist/cli.js"
+  },
+  "dependencies": {
+    "@fastify/static": "^7.0.4",
+    "@fastify/websocket": "^10.0.1",
+    "@homebridge/node-pty-prebuilt-multiarch": "^0.13.1",
+    "@xterm/headless": "^5.5.0",
+    "commander": "^12.0.0",
+    "fastify": "^4.29.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/ws": "^8.18.1",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

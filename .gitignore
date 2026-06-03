@@ -1,0 +1,13 @@
+node_modules/
+dist/
+*.js.map
+.claude/setting.local.json
+
+# Package locks
+package-lock.json
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/

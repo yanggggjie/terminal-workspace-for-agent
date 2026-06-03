@@ -1,0 +1,199 @@
+:root {
+  --bg: #0c0c0e;
+  --surface: #141418;
+  --border: #2a2a32;
+  --text: #ececf0;
+  --muted: #8b8b96;
+  --accent: #4a9eff;
+  --accent-dim: #1a2d4a;
+  --term-cols: 120;
+  --cell-w: 8.4px;
+  --cell-h: 17px;
+  --term-w: calc(var(--term-cols) * var(--cell-w));
+  --term-rows: 42;
+  --term-h: calc(var(--term-rows) * var(--cell-h) + 2px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "SF Pro Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.45;
+}
+
+.page {
+  width: min(100%, calc(var(--term-w) + 2.5rem));
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2rem;
+}
+
+/* --- Header / brand --- */
+
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.brand-logo {
+  display: block;
+  width: min(100%, 420px);
+  height: 52px;
+  object-fit: cover;
+  object-position: center 42%;
+  margin: -10px 0 -6px -4px;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35));
+}
+
+.brand-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.watch-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(74, 158, 255, 0.35);
+  border-radius: 4px;
+}
+
+.hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+/* --- Session tabs --- */
+
+.tabs-wrap {
+  margin-top: 0.75rem;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tab {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: #b8b8c2;
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8125rem;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.tab:hover {
+  border-color: #444;
+  color: var(--text);
+}
+
+.tab.active {
+  border-color: var(--accent);
+  color: var(--text);
+  background: var(--accent-dim);
+}
+
+.tab.exited {
+  opacity: 0.55;
+}
+
+.empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.empty code {
+  font-size: 0.75rem;
+  color: #a8a8b4;
+}
+
+/* --- Terminal panel (width matches PTY cols, taller than agent view) --- */
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.terminal-shell {
+  width: var(--term-w);
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #1a1a1e;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+    0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.terminal-host {
+  width: var(--term-w);
+  height: var(--term-h);
+  max-width: 100%;
+}
+
+.terminal-host .xterm {
+  padding: 4px 6px;
+}
+
+.terminal-host .xterm-viewport {
+  border-radius: 0;
+}
+
+.status-line {
+  margin: 0.65rem 0 0;
+  width: var(--term-w);
+  max-width: 100%;
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@media (max-width: 1100px) {
+  .page {
+    width: 100%;
+  }
+
+  .terminal-shell,
+  .terminal-host,
+  .status-line {
+    width: 100%;
+  }
+
+  .terminal-host {
+    height: min(var(--term-h), 70vh);
+  }
+}
