@@ -152,12 +152,45 @@ Agent skill: [`skills/twa/SKILL.md`](skills/twa/SKILL.md)
 
 ## Development
 
+Requires [just](https://github.com/casey/just) (optional but recommended) and Node per [Requirements](#requirements).
+
 ```bash
 git clone https://github.com/yanggggjie/terminal-workspace-for-agent.git
 cd terminal-workspace-for-agent
+nvm use          # reads .nvmrc (24)
 npm install
-npm test
+npm approve-scripts node-pty   # if npm warns about allow-scripts; then npm install again
+just test        # build + verify publish layout
 ```
+
+**Local `twa` from this repo** (global command points here instead of npm):
+
+```bash
+just link        # npm install, build, npm link
+```
+
+In a **second terminal**, keep TypeScript compiling on save:
+
+```bash
+just dev         # tsc --watch → updates dist/ for linked twa
+```
+
+Try changes from any directory: `twa --help`, `twa sess list`, etc.
+
+When finished, restore the registry global install:
+
+```bash
+just unlink
+```
+
+| Recipe | Same as |
+|--------|---------|
+| `just build` | `npm run build` |
+| `just test` | `npm test` |
+
+Run CLI without linking: `npm start` (after `npm run build`).
+
+Release: `npm run release -- patch` (or `minor` / `major`; clean git tree required).
 
 ## License
 

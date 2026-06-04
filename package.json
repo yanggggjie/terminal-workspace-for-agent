@@ -32,17 +32,14 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "node scripts/copy-watch-vendor.js && npm run clean:dist && tsc && cp -r src/watch-ui dist/watch-ui && chmod +x dist/cli.js",
-    "clean:dist": "rm -rf dist",
-    "clean": "npm run clean:dist",
-    "clean:all": "rm -rf node_modules package-lock.json dist",
+    "build": "node scripts/copy-watch-vendor.js && rm -rf dist && tsc && cp -r src/watch-ui dist/watch-ui && chmod +x dist/cli.js",
     "dev": "tsc --watch",
+    "start": "node dist/cli.js",
+    "test": "node scripts/verify.js",
     "prepack": "npm run build",
     "version": "node scripts/sync-skill-version.js",
-    "prepublishOnly": "node scripts/verify.js",
-    "test": "node scripts/verify.js",
-    "release": "node scripts/release.js",
-    "start": "node dist/cli.js"
+    "prepublishOnly": "npm test",
+    "release": "node scripts/release.js"
   },
   "dependencies": {
     "@fastify/static": "^9.1.3",
