@@ -1,10 +1,10 @@
 /**
- * Wraps a PTY process (@homebridge/node-pty-prebuilt-multiarch).
+ * Wraps a PTY process (node-pty).
  * Uses @xterm/headless as a VT renderer for watch UI streaming.
  */
 import * as fs from "fs";
 import * as path from "path";
-import * as pty from "@homebridge/node-pty-prebuilt-multiarch";
+import * as pty from "node-pty";
 import { Terminal } from "@xterm/headless";
 import { SessionInfo } from "./protocol";
 

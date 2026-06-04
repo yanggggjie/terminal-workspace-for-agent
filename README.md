@@ -145,6 +145,11 @@ twa obs screen scroll --sess=<name> --dire=up|down|top|bottom
 
 Agent skill: [`skills/twa/SKILL.md`](skills/twa/SKILL.md)
 
+## Requirements
+
+- **Node.js** 22.x–26.x (`engines`: `>=22.0.0 <27.0.0`); repo includes `.nvmrc` (`24`) for local dev
+- After `npm install` / `npm install -g`, if npm warns about **allow-scripts** for `node-pty`, run `npm approve-scripts node-pty` (or `npm approve-scripts --allow-scripts-pending`) in that environment, then reinstall so PTY prebuilds can install.
+
 ## Development
 
 ```bash
