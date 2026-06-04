@@ -5,11 +5,69 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as pty from "node-pty";
-import { Terminal } from "@xterm/headless";
+import { Terminal, type IBufferCell } from "@xterm/headless";
 import { SessionInfo } from "./protocol";
 
 const POLL_MS = 100;
 const STABLE_POLLS = 10;
+
+type CellSnap = {
+  ch: string;
+  fg: number;
+  bg: number;
+  fgMode: number;
+  bgMode: number;
+  attr: number;
+};
+
+/** Viewport snapshot: exactly `rows` lines × `cols` cells per line. */
+type ViewportGrid = {
+  cols: number;
+  rows: number;
+  cells: CellSnap[][];
+};
+
+function packAttr(cell: IBufferCell): number {
+  return (
+    (cell.isBold() ? 1 : 0) |
+    (cell.isDim() ? 2 : 0) |
+    (cell.isUnderline() ? 4 : 0) |
+    (cell.isInverse() ? 8 : 0)
+  );
+}
+
+function snapCell(cell: IBufferCell | undefined, fallback: IBufferCell): CellSnap {
+  const c = cell ?? fallback;
+  return {
+    ch: c.getChars(),
+    fg: c.getFgColor(),
+    bg: c.getBgColor(),
+    fgMode: c.getFgColorMode(),
+    bgMode: c.getBgColorMode(),
+    attr: packAttr(c),
+  };
+}
+
+function cellsEqual(a: CellSnap, b: CellSnap): boolean {
+  return (
+    a.ch === b.ch &&
+    a.fg === b.fg &&
+    a.bg === b.bg &&
+    a.fgMode === b.fgMode &&
+    a.bgMode === b.bgMode &&
+    a.attr === b.attr
+  );
+}
+
+function gridsEqual(a: ViewportGrid, b: ViewportGrid): boolean {
+  if (a.cols !== b.cols || a.rows !== b.rows) return false;
+  for (let y = 0; y < a.rows; y++) {
+    for (let x = 0; x < a.cols; x++) {
+      if (!cellsEqual(a.cells[y][x], b.cells[y][x])) return false;
+    }
+  }
+  return true;
+}
 
 /** One word, or 2–3 words joined by hyphens: dev, vite-once, npm-run-dev */
 export const SESSION_NAME_PATTERN = /^[a-z]+(-[a-z]+){0,2}$/;
@@ -128,6 +186,30 @@ export class Session {
     this.ptyProcess.write(key);
   }
 
+  /** Read visible viewport as a fixed cols×rows cell grid. */
+  private readViewportGrid(): ViewportGrid {
+    const cols = this.terminal.cols;
+    const rows = this.terminal.rows;
+    const buf = this.terminal.buffer.active;
+    const startY = buf.viewportY;
+    const nullCell = buf.getNullCell();
+    const scratch = buf.getNullCell();
+    const cells: CellSnap[][] = [];
+
+    for (let y = 0; y < rows; y++) {
+      const line = buf.getLine(startY + y);
+      const row: CellSnap[] = [];
+      for (let x = 0; x < cols; x++) {
+        const cell = line?.getCell(x, scratch);
+        row.push(snapCell(cell, nullCell));
+      }
+      cells.push(row);
+    }
+
+    return { cols, rows, cells };
+  }
+
+  /** Plain text for agents (trim padding; semantic content over pixel fidelity). */
   private readPlainScreen(): string {
     const buf = this.terminal.buffer.active;
     const lines: string[] = [];
@@ -144,29 +226,29 @@ export class Session {
     return this.readPlainScreen();
   }
 
-  /** Poll every 100ms; 10 consecutive unchanged reads → stable (obs screen stable). */
+  /** Poll every 100ms; 10 consecutive identical cell grids → stable. */
   async waitForStable(): Promise<string> {
     if (this._status === "exited") {
       return this.snapshot();
     }
 
-    let lastScreen = this.readPlainScreen();
+    let lastGrid = this.readViewportGrid();
     let stableCount = 0;
 
     while (stableCount < STABLE_POLLS) {
       await new Promise((resolve) => setTimeout(resolve, POLL_MS));
       if (this._status !== "running") break;
 
-      const current = this.readPlainScreen();
-      if (current === lastScreen) {
+      const current = this.readViewportGrid();
+      if (gridsEqual(lastGrid, current)) {
         stableCount++;
       } else {
         stableCount = 0;
-        lastScreen = current;
+        lastGrid = current;
       }
     }
 
-    return this.snapshot();
+    return this.readPlainScreen();
   }
 
   scroll(direction: "up" | "down" | "top" | "bottom"): void {

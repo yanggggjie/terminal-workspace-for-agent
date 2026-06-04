@@ -1,12 +1,29 @@
 ---
 name: twa
 version: 0.1.0
-description: Interactive CLI/TUI/agent workspace via PTY. Not for plain bash. Three APIs — sess start/kill/list (session), act send text/key (input), obs screen now/stable/scroll (read screen). Package terminal-workspace-for-agent, command twa. Block synchronously.
+description: Interactive CLI/TUI/agent workspace via PTY. Not for plain bash. OpenCode incompatible — never start OpenCode via twa. Tested agent CLIs include Claude Code, Codex, Cursor Agent, Kimi Code, Pi. Three APIs — sess/act/obs. Block synchronously.
 ---
 
 # twa — terminal workspace for agents
 
 **terminal-workspace-for-agent** / command **`twa`**. Plain CLI → shell directly, **no twa**. Interactive programs → twa.
+
+## Coding agent CLI compatibility
+
+| Status | Agent / CLI |
+|--------|-------------|
+| **Tested — OK** | Claude Code, Codex, Cursor Agent, Kimi Code, Pi |
+| **Not compatible** | **OpenCode** — **never** use twa to start an OpenCode agent |
+| **Unknown** | Other coding agent CLIs — not tested; do not assume they work |
+
+**Forbidden:** `twa sess start` with OpenCode (any `opencode` / OpenCode agent command). Run OpenCode outside twa.
+
+**Tested example** (adjust binary to your install):
+
+```bash
+twa sess start --sess=claude --cmd="claude"
+twa sess start --sess=cursor --cmd="cursor agent"
+```
 
 ## Three APIs
 
@@ -34,14 +51,14 @@ twa sess kill --sess=sub-agent
 |------|----------|-----------------|
 | Interactive CLI (one-shot) | `npm create vite@latest` | **Yes** — `twa sess kill --sess=…` |
 | Interactive TUI (one-shot) | `lazygit` | **Yes** |
-| Interactive agent | Claude Code, agent CLIs | **No** until task complete (kill loses context) |
+| Interactive agent | Claude Code, Codex, Cursor Agent, Kimi Code, Pi (not OpenCode) | **No** until task complete (kill loses context) |
 | Long-running + observe | `npm run dev` | **No** while watching logs; kill when dev done |
 
 Name sessions as **one word** or **2–3 words joined by `-`** (`dev`, `vite-once`, `lazy-git`, `sub-agent`). When the process exits, the session is removed automatically. Use **`twa sess kill`** to stop early; **`twa sess list`** shows only running sessions.
 
 - `act` / `obs` always need `--sess=` and an existing session.
 - Session names: **one lowercase word**, or **2–3 words** joined by `-` (e.g. `dev`, `vite-once`, `npm-run-dev`).
-- Forbidden: `twa sess watch`, sleep/polling, background twa, screen output from `act`.
+- Forbidden: `twa sess watch`, sleep/polling, background twa, screen output from `act`, **any OpenCode agent via twa**.
 
 ## When to use twa vs shell
 

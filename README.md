@@ -13,7 +13,7 @@ Install the npm package `terminal-workspace-for-agent`, run the command **`twa`*
 
 ## What it is
 
-It lets your agent drive interactive programs the way a human would (e.g. work with Claude Code, **lazygit**, **`npm create vite`**).
+It lets your agent drive interactive programs the way a human would (e.g. **Claude Code**, **Codex**, **Cursor Agent**, **lazygit**, **`npm create vite`**). **OpenCode is not compatible** — do not start it via twa ([details](#coding-agent-cli-compatibility)).
 
 Forked from [tui-use](https://github.com/onesuper/tui-use) and modified for `twa`. Thanks to [onesuper](https://github.com/onesuper) for the original work.
 
@@ -28,7 +28,7 @@ Skill URL: https://raw.githubusercontent.com/yanggggjie/terminal-workspace-for-a
 Confirm both.
 ```
 
-Then prompt your agent: “Use twa to run a new Claude Code instance to finish some work.”
+Then prompt your agent: “Use twa to run a tested coding agent (e.g. Claude Code) to finish some work.” See [Coding agent CLI compatibility](#coding-agent-cli-compatibility).
 
 To watch what the agent is doing with twa, run `twa sess watch` in your terminal and open http://127.0.0.1:7654/.
 
@@ -58,6 +58,22 @@ Confirm both.
 
 Rules: kill one-shot sessions promptly when done; keep agent/dev sessions while needed. Exited processes are removed from `sess list` automatically — use `twa sess kill` to stop a session before the process exits.
 
+## Coding agent CLI compatibility
+
+| Status | Agent / CLI |
+|--------|-------------|
+| **Tested — OK** | Claude Code, Codex, Cursor Agent, Kimi Code, Pi |
+| **Not compatible** | **OpenCode** — do **not** use twa to start an OpenCode agent |
+| **Unknown** | Other coding agent CLIs — not tested; compatibility not guaranteed |
+
+**Do not run:** `twa sess start --cmd="opencode …"` (or any OpenCode agent entrypoint). Use OpenCode outside twa.
+
+For tested agents, start the same command you would run in a terminal, for example:
+
+```bash
+twa sess start --sess=claude --cmd="claude"
+twa sess start --sess=cursor --cmd="cursor agent"
+```
 
 ## Examples
 
