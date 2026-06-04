@@ -4,6 +4,7 @@
  * Options use --name=value syntax.
  */
 import * as path from "path";
+import * as fs from "fs";
 import { Command } from "commander";
 import { ensureServerRunning, sendRequest } from "./client";
 import { SERVER_URL } from "./server";
@@ -132,6 +133,28 @@ function requireScrollDirection(dir: string): ScrollDirection {
   replyError(`--dire= must be one of: ${SCROLL_DIRECTIONS.join(", ")}`);
 }
 
+function requireTextInput(options: { text?: string; file?: string }): string {
+  const hasText = options.text !== undefined;
+  const hasFile = options.file !== undefined;
+  if (hasText && hasFile) {
+    replyError("Use either --text= or --file=, not both");
+  }
+  if (!hasText && !hasFile) {
+    replyError("Missing text input. Use --text=<text> or --file=<path>");
+  }
+  const file = options.file;
+  if (file !== undefined) {
+    const filePath = path.resolve(file);
+    try {
+      return fs.readFileSync(filePath, "utf8");
+    } catch (e: unknown) {
+      const reason = e instanceof Error ? e.message : String(e);
+      replyError(`Cannot read --file=${filePath}: ${reason}`);
+    }
+  }
+  return options.text ?? "";
+}
+
 function handleOp(res: Response): void {
   if (res.type === "error") replyError((res as ErrorResponse).message);
   replySuccess();
@@ -223,15 +246,16 @@ const send = act.command("send").description("Send text or key input to a sessio
 
 send
   .command("text")
-  .description("Type text (\\n = Enter, \\t = Tab)")
+  .description("Type text from --text or a UTF-8 file from --file")
   .requiredOption("--sess <name>", "Session name (--sess=dev)")
-  .requiredOption("--text <text>", "Text to type (--text=hello)")
-  .action(async (options: { sess: string; text: string }) => {
+  .option("--text <text>", "Text to type (--text=hello)")
+  .option("--file <path>", "Read text from a UTF-8 file (--file=/tmp/prompt.txt)")
+  .action(async (options: { sess: string; text?: string; file?: string }) => {
     handleOp(
       await sendRequest({
         type: "send_text",
         session_name: requireSession(options.sess),
-        text: options.text,
+        text: requireTextInput(options),
       })
     );
   });
