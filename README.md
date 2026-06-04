@@ -78,7 +78,7 @@ twa sess kill --sess=vite-once
 # Sub-agent — keep session between turns
 twa sess start --sess=sub-agent --cmd="claude"
 twa obs screen stable --sess=sub-agent
-twa act send text --sess=sub-agent --txt="fix the login bug"
+twa act send text --sess=sub-agent --text="fix the login bug"
 twa obs screen stable --sess=sub-agent
 ```
 
@@ -118,7 +118,7 @@ All options use **`--name=value`**.
 | `--sess=` | sess start/kill, act, obs |
 | `--cmd=` | sess start |
 | `--cwd=` | sess start |
-| `--txt=` | act send text |
+| `--text=` | act send text |
 | `--key=` | act send key |
 | `--dire=` | obs screen scroll |
 
@@ -134,7 +134,7 @@ twa sess keys
 twa sess watch   # human-only
 
 # act — input (session must exist)
-twa act send text --sess=<name> --txt=<text>
+twa act send text --sess=<name> --text=<text>
 twa act send key  --sess=<name> --key=<key>
 
 # obs — read screen (session must exist)

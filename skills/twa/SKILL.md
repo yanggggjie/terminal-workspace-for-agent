@@ -23,7 +23,7 @@ On failure: one line `error: <reason>` (exit 1).
 ```bash
 twa sess start --sess=sub-agent --cmd="claude code"
 twa obs screen stable --sess=sub-agent
-twa act send text --sess=sub-agent --txt="run all tests and fix failures"
+twa act send text --sess=sub-agent --text="run all tests and fix failures"
 twa obs screen stable --sess=sub-agent
 twa sess kill --sess=sub-agent
 ```
@@ -62,7 +62,7 @@ Rules: kill one-shot sessions promptly when done; keep agent/dev sessions while 
 | `--sess=` | sess start/kill, act, obs |
 | `--cmd=` | sess start |
 | `--cwd=` | sess start |
-| `--txt=` | act send text |
+| `--text=` | act send text |
 | `--key=` | act send key |
 | `--dire=` | obs screen scroll |
 
@@ -76,7 +76,7 @@ twa sess list
 twa sess keys
 twa sess watch   # human-only
 
-twa act send text --sess=<name> --txt=<text>
+twa act send text --sess=<name> --text=<text>
 twa act send key  --sess=<name> --key=<key>
 
 twa obs screen now    --sess=<name>
@@ -97,7 +97,7 @@ twa sess kill --sess=vite-once
 # Sub-agent — keep until done
 twa sess start --sess=sub-agent --cmd="claude"
 twa obs screen stable --sess=sub-agent
-twa act send text --sess=sub-agent --txt="fix bug"
+twa act send text --sess=sub-agent --text="fix bug"
 twa obs screen stable --sess=sub-agent
 
 # Dev server — keep, use obs

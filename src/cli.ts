@@ -13,12 +13,50 @@ import { Response, ErrorResponse, ScreenResponse } from "./protocol";
 import { version } from "../package.json";
 
 const COMMAND_NAME = "twa";
+const TOP_LEVEL_COMMANDS = new Set(["sess", "act", "obs", "help"]);
+const DOCS_URL = "https://github.com/yanggggjie/terminal-workspace-for-agent";
 const SCROLL_DIRECTIONS = ["up", "down", "top", "bottom"] as const;
 type ScrollDirection = (typeof SCROLL_DIRECTIONS)[number];
+
+const RED = "\x1b[31m";
+const BOLD = "\x1b[1m";
+const RESET = "\x1b[0m";
+
+function bold(s: string): string {
+  return `${BOLD}${s}${RESET}`;
+}
+
+const HELP_API = `
+${bold("API")}    ${bold("Commands")}                              ${bold("Example")}
+${bold("sess")}   start, kill, killall, list, keys      twa sess start --sess=dev --cmd="npm run dev"
+${bold("act")}    send text, send key                   twa act send text --sess=dev --text=hello
+${bold("obs")}    screen now, stable, scroll            twa obs screen stable --sess=dev
+
+${bold("Workflow")}:  sess start  →  (act → obs screen stable)*  →  sess kill
+${bold("Watch UI")}:  twa sess watch  (humans only — agents use obs)
+${bold("Docs")}:      ${DOCS_URL}
+`;
 
 const program = new Command();
 
 const START_EXAMPLE = 'twa sess start --sess=dev --cmd="npm run dev"';
+
+function firstPositionalArg(args: string[]): string | undefined {
+  for (const a of args) {
+    if (!a.startsWith("-")) return a;
+  }
+  return undefined;
+}
+
+function warnWrongTopLevel(got: string): void {
+  process.stderr.write(
+    `${RED}Unknown top-level command "${got}". Use twa sess, twa act, or twa obs.${RESET}\n\n`
+  );
+}
+
+function printHelp(): void {
+  program.outputHelp();
+}
 
 program
   .name(COMMAND_NAME)
@@ -28,18 +66,7 @@ program
     "twa is short for terminal-workspace-for-agent.\n" +
       "Use twa for interactive programs (prompts, TUI, agent CLIs) — not plain bash.\n"
   )
-  .addHelpText(
-    "afterAll",
-    "\n" +
-      "Three APIs:\n" +
-      "  sess start / kill / killall / list / keys / watch   session lifecycle\n" +
-      "  act send text / key                                send input (stdout: success | error: …)\n" +
-      "  obs screen now / stable / scroll                   read screen (stdout: screen text)\n" +
-      "\n" +
-      "Workflow:  sess start  →  (act → obs screen stable)*  →  sess kill\n" +
-      "Observability: agents use obs; humans use sess watch.\n" +
-      "Docs: https://github.com/yanggggjie/terminal-workspace-for-agent\n"
-  )
+  .addHelpText("afterAll", HELP_API)
   .version(version);
 
 function parseCommandArgv(command: string): string[] {
@@ -198,13 +225,13 @@ send
   .command("text")
   .description("Type text (\\n = Enter, \\t = Tab)")
   .requiredOption("--sess <name>", "Session name (--sess=dev)")
-  .requiredOption("--txt <text>", "Text to type (--txt=hello)")
-  .action(async (options: { sess: string; txt: string }) => {
+  .requiredOption("--text <text>", "Text to type (--text=hello)")
+  .action(async (options: { sess: string; text: string }) => {
     handleOp(
       await sendRequest({
         type: "send_text",
         session_name: requireSession(options.sess),
-        text: options.txt,
+        text: options.text,
       })
     );
   });
@@ -300,11 +327,25 @@ async function runWatchServer(): Promise<void> {
 }
 
 const argv = process.argv.slice(2);
+
 if (argv.length === 0) {
-  program.outputHelp();
+  printHelp();
   process.exit(0);
 }
 
-program.parseAsync(process.argv).catch((err) => {
-  replyError(err.message);
+const top = firstPositionalArg(argv);
+if (top && !TOP_LEVEL_COMMANDS.has(top)) {
+  warnWrongTopLevel(top);
+  printHelp();
+  process.exit(1);
+}
+
+program.exitOverride();
+
+program.parseAsync(process.argv).catch((err: Error & { code?: string }) => {
+  if (err.code?.startsWith("commander.")) {
+    printHelp();
+    process.exit(1);
+  }
+  replyError(err.message ?? String(err));
 });
