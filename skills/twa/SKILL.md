@@ -1,6 +1,6 @@
 ---
 name: twa
-version: 0.1.0
+version: 0.1.1
 description: Operate interactive CLI, TUI, dev-server, and coding-agent sessions through a PTY. Use when a command needs keystrokes, redraws a terminal UI, or must be observed between steps. Not for plain bash. APIs: sess, act, obs.
 ---
 
