@@ -1,6 +1,6 @@
 {
   "name": "terminal-workspace-for-agent",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "terminal-workspace-for-agent (twa) — terminal workspace for AI agents. Command: twa. Package: terminal-workspace-for-agent.",
   "license": "MIT",
   "repository": {
