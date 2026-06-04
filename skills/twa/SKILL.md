@@ -1,6 +1,6 @@
 ---
 name: twa
-version: 0.1.1
+version: 0.1.2
 description: Operate interactive CLI, TUI, dev-server, and coding-agent sessions through a PTY. Use when a command needs keystrokes, redraws a terminal UI, or must be observed between steps. Not for plain bash. APIs: sess, act, obs.
 ---
 
@@ -48,7 +48,12 @@ On failure: one line `error: <reason>` (exit 1).
 ```bash
 twa sess start --sess=sub-agent --cmd="claude"
 twa obs screen stable --sess=sub-agent
-twa act send text --sess=sub-agent --text="run all tests and fix failures"
+tmp="/tmp/twa-prompt.txt"
+cat > "$tmp" <<'EOF'
+run all tests and fix failures
+EOF
+twa act send text --sess=sub-agent --file="$tmp"
+twa act send key --sess=sub-agent --key=enter
 twa obs screen stable --sess=sub-agent
 twa sess kill --sess=sub-agent
 ```
@@ -65,10 +70,40 @@ twa sess kill --sess=sub-agent
 Name sessions as one lowercase word or 2-3 words joined by `-`, such as `dev`, `vite-once`, `lazy-git`, or `sub-agent`. When the process exits, the session is removed automatically. Use `twa sess kill` to stop early; `twa sess list` shows only running sessions.
 
 - `act` / `obs` always need `--sess=` and an existing session.
-- For long prompts, write a temporary `.txt` file and send it with `twa act send text --sess=... --file=/absolute/path/to/prompt.txt`.
+- **Prefer `twa act send text --file=`** — write prompt text to a temp `.txt` file (absolute path), then send it. Safer for multiline content, quotes, and shell metacharacters. Use `--text=` only for very short input (e.g. a few words with no special characters).
 - Do not use `twa sess watch`; it is for humans.
 - Do not background `twa` calls. Each call must finish before the next call.
 - Do not rely on output from `act`; use `obs` to read the screen.
+
+## Prompts, choices, and confirmations
+
+**TUI menus, numbered options, yes/no prompts, and confirmations — use `send key` only.** Do not use `send text` to pick options in a TUI.
+
+| Screen | Use |
+|--------|-----|
+| TUI menu, list, `[Y/n]`, numbered choices | `send key` — `arrow_up` / `arrow_down` to move, `enter` to select or confirm |
+| Free-form prompt, agent task, shell input | `send text --file=` (or `--text=` if very short), then `send key --key=enter` to submit |
+
+After every `act`, run `obs screen stable` to verify the screen moved on.
+
+**If stuck** — the screen shows a menu, choice, or confirmation and nothing progresses after `obs screen stable`, try **`send key --key=enter`** first (accept default / confirm). Then try arrow keys or `tab` if still stuck.
+
+```bash
+# TUI menu: move with arrows, confirm with Enter
+twa act send key --sess=vite-once --key=arrow_down
+twa act send key --sess=vite-once --key=enter
+twa obs screen stable --sess=vite-once
+
+# Default confirmation — just Enter
+twa act send key --sess=vite-once --key=enter
+twa obs screen stable --sess=vite-once
+
+# Stuck on a choice screen — try Enter first
+twa act send key --sess=vite-once --key=enter
+twa obs screen stable --sess=vite-once
+```
+
+Run `twa sess keys` for supported key names.
 
 ## Parameters (`--name=value`)
 
@@ -77,8 +112,8 @@ Name sessions as one lowercase word or 2-3 words joined by `-`, such as `dev`, `
 | `--sess=` | sess start/kill, act, obs |
 | `--cmd=` | sess start |
 | `--cwd=` | sess start |
-| `--text=` | act send text |
-| `--file=` | act send text |
+| `--file=` | act send text (preferred) |
+| `--text=` | act send text (very short input only) |
 | `--key=` | act send key |
 | `--dire=` | obs screen scroll |
 
@@ -92,8 +127,8 @@ twa sess list
 twa sess keys
 twa sess watch   # human-only
 
-twa act send text --sess=<name> --text=<text>
-twa act send text --sess=<name> --file=<absolute-path-to-text-file>
+twa act send text --sess=<name> --file=<absolute-path-to-text-file>   # preferred
+twa act send text --sess=<name> --text=<text>                         # very short only
 twa act send key  --sess=<name> --key=<key>
 
 twa obs screen now    --sess=<name>
@@ -111,18 +146,19 @@ twa act send key --sess=vite-once --key=enter
 twa obs screen stable --sess=vite-once
 twa sess kill --sess=vite-once
 
-# Sub-agent: keep until done
+# Sub-agent: keep until done (prefer --file for prompts)
 twa sess start --sess=sub-agent --cmd="claude"
 twa obs screen stable --sess=sub-agent
-twa act send text --sess=sub-agent --text="fix bug"
-twa obs screen stable --sess=sub-agent
-
-# Long prompt: write a temp txt file, then send by absolute path
 tmp="/tmp/twa-prompt.txt"
 cat > "$tmp" <<'EOF'
 fix bug, run tests, and summarize the changes
 EOF
 twa act send text --sess=sub-agent --file="$tmp"
+twa act send key --sess=sub-agent --key=enter
+twa obs screen stable --sess=sub-agent
+
+# Very short input only — use --text
+twa act send text --sess=sub-agent --text="yes"
 twa act send key --sess=sub-agent --key=enter
 twa obs screen stable --sess=sub-agent
 

@@ -104,13 +104,9 @@ twa act send key --sess=vite-once --key=enter
 twa obs screen stable --sess=vite-once
 twa sess kill --sess=vite-once
 
-# Sub-agent: keep session between turns
+# Sub-agent: keep session between turns (prefer --file for prompts)
 twa sess start --sess=sub-agent --cmd="claude"
 twa obs screen stable --sess=sub-agent
-twa act send text --sess=sub-agent --text="fix the login bug"
-twa obs screen stable --sess=sub-agent
-
-# Long prompt: write a temp txt file, then send by absolute path
 tmp="/tmp/twa-prompt.txt"
 cat > "$tmp" <<'EOF'
 fix the login bug, run tests, and summarize the changes
@@ -140,7 +136,7 @@ twa sess start -> (twa act ... -> twa obs screen stable)* -> twa sess kill
 ```
 
 - `act` and `obs` both require `--sess=` and assume the session already exists.
-- For long prompts, write a temporary `.txt` file and send it with `twa act send text --sess=... --file=/absolute/path/to/prompt.txt`.
+- **Agents should prefer `twa act send text --file=`** — write prompt text to a temp `.txt` file (absolute path), then send it. Use `--text=` only for very short input (e.g. a few words with no special characters).
 - After every `act` that may change the screen, run `twa obs screen stable --sess=...`.
 - Agents use `obs`. Humans use `twa sess watch`.
 Human view: `twa sess watch` -> http://127.0.0.1:7654
@@ -154,8 +150,8 @@ All options use `--name=value`.
 | `--sess=` | sess start/kill, act, obs |
 | `--cmd=` | sess start |
 | `--cwd=` | sess start |
-| `--text=` | act send text |
-| `--file=` | act send text |
+| `--file=` | act send text (preferred) |
+| `--text=` | act send text (very short input only) |
 | `--key=` | act send key |
 | `--dire=` | obs screen scroll |
 
@@ -171,8 +167,8 @@ twa sess keys
 twa sess watch   # human-only
 
 # act: input (session must exist)
-twa act send text --sess=<name> --text=<text>
-twa act send text --sess=<name> --file=<absolute-path-to-text-file>
+twa act send text --sess=<name> --file=<absolute-path-to-text-file>   # preferred
+twa act send text --sess=<name> --text=<text>                         # very short only
 twa act send key  --sess=<name> --key=<key>
 
 # obs: read screen (session must exist)
