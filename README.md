@@ -192,14 +192,18 @@ npm install
 npm approve-scripts node-pty   # if npm warns about allow-scripts; then npm install again
 just test        # build + verify publish layout
 just link        # npm install, build, npm link
-just dev         # tsc --watch; updates dist/ for linked tta
 ```
 
-If you change background service or session/server code, restart running tta sessions:
+Local dev (two terminals):
 
 ```bash
-tta sess killall
+just dev              # terminal 1: tsc --watch + nodemon server
+tta sess watch        # terminal 2: open http://127.0.0.1:7654
 ```
+
+- **Backend** (`src/*.ts`): save → tsc recompiles → nodemon restarts server → refresh browser.
+- **Watch UI** (`src/watch-ui/*`): save → refresh browser (served directly from `src/` in dev).
+- While `just dev` is running, `tta` will not auto-spawn a detached server; start `just dev` first.
 
 ## License
 

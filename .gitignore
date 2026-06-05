@@ -1,5 +1,6 @@
 node_modules/
 dist/
+.tta-dev
 *.js.map
 .claude/setting.local.json
 
