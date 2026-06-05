@@ -1,5 +1,5 @@
 /**
- * twa server — Fastify HTTP/WebSocket, watch UI static files, lifecycle, and entry point.
+ * tta server — Fastify HTTP/WebSocket, watch UI static files, lifecycle, and entry point.
  */
 import * as path from "path";
 import Fastify from "fastify";
@@ -201,7 +201,7 @@ async function startServer(): Promise<void> {
 
   try {
     await app.listen({ host: SERVER_HOST, port: SERVER_PORT });
-    process.stderr.write(`twa server started (${SERVER_URL})\n`);
+    process.stderr.write(`tta server started (${SERVER_URL})\n`);
   } catch (err) {
     process.stderr.write(`${formatListenError(err as NodeJS.ErrnoException)}\n`);
     process.exit(1);

@@ -29,7 +29,7 @@ run("npm publish");
 
 const version = require("../package.json").version;
 const skillUrl =
-  "https://raw.githubusercontent.com/yanggggjie/terminal-workspace-for-agent/main/skills/twa/SKILL.md";
-process.stdout.write(`\nrelease: published terminal-workspace-for-agent@${version}\n`);
+  "https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md";
+process.stdout.write(`\nrelease: published terminal-tool-for-agents@${version}\n`);
 process.stdout.write(`release: skill URL  ${skillUrl}\n`);
 process.stdout.write("release: run  git push && git push --tags\n");

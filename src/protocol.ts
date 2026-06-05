@@ -1,6 +1,6 @@
 /**
- * twa protocol — CLI RPC request/response types (POST /rpc JSON body).
- * Request `type` values match CLI subcommands (e.g. send_text ↔ twa act send text, start ↔ twa sess start).
+ * tta protocol — CLI RPC request/response types (POST /rpc JSON body).
+ * Request `type` values match CLI subcommands (e.g. send_text ↔ tta act send text, start ↔ tta sess start).
  */
 
 export interface StartRequest {

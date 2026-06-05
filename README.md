@@ -1,36 +1,36 @@
 <div align="center">
 
-<img src="docs/terminal-workspace-for-agent-logo.png" alt="terminal-workspace-for-agent, abbreviated as twa" width="520">
+<img src="docs/terminal-tool-for-agents-logo.png" alt="terminal-tool-for-agents, abbreviated as tta" width="520">
 
 
-### **twa: a terminal workspace for agents, used by agents to operate interactive terminals.**
+### **tta: a terminal tool for agents, used by agents to operate interactive terminals.**
 
-[![npm](https://img.shields.io/npm/v/terminal-workspace-for-agent.svg)](https://www.npmjs.com/package/terminal-workspace-for-agent)
+[![npm](https://img.shields.io/npm/v/terminal-tool-for-agents.svg)](https://www.npmjs.com/package/terminal-tool-for-agents)
 
 </div>
 
-Install the npm package `terminal-workspace-for-agent`, then let your agent use the command `twa`.
+Install the npm package `terminal-tool-for-agents`, then let your agent use the command `tta`.
 
 ## What it is
 
-`twa` is for agents. It lets an agent drive interactive programs through a real PTY: coding agent CLIs, TUIs like `lazygit`, setup wizards like `npm create vite`, and long-running processes you want to observe.
+`tta` is for agents. It lets an agent drive interactive programs through a real PTY: coding agent CLIs, TUIs like `lazygit`, setup wizards like `npm create vite`, and long-running processes you want to observe.
 
 Idea: start background terminals as `sess`, send keys or text as `act`, then wait for completion and read results as `obs`.
 
-Use normal shell tools for plain, non-interactive commands. Use `twa` when the program expects keystrokes, redraws a terminal UI, or needs screen observation between steps.
+Use normal shell tools for plain, non-interactive commands. Use `tta` when the program expects keystrokes, redraws a terminal UI, or needs screen observation between steps.
 
-Forked from [tui-use](https://github.com/onesuper/tui-use) and modified for `twa`. Thanks to [onesuper](https://github.com/onesuper) for the original work.
+Forked from [tui-use](https://github.com/onesuper/tui-use) and modified for `tta`. Thanks to [onesuper](https://github.com/onesuper) for the original work.
 
 ## Quick Start
 
 Copy this block into your agent:
 
 ```text
-Install twa CLI:
-npm install -g terminal-workspace-for-agent
+Install tta CLI:
+npm install -g terminal-tool-for-agents
 
-Install the twa skill from:
-https://raw.githubusercontent.com/yanggggjie/terminal-workspace-for-agent/main/skills/twa/SKILL.md
+Install the tta skill from:
+https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
 
 Confirm both are installed.
 ```
@@ -38,13 +38,13 @@ Confirm both are installed.
 Then ask your agent to use it:
 
 ```text
-Use twa to run an interactive coding agent CLI and finish the task.
+Use tta to run an interactive coding agent CLI and finish the task.
 ```
 
 To watch sessions as a human, run:
 
 ```bash
-twa sess watch
+tta sess watch
 ```
 
 Then open http://127.0.0.1:7654/.
@@ -54,72 +54,72 @@ Then open http://127.0.0.1:7654/.
 Copy this block into your agent:
 
 ```text
-Update twa CLI:
-npm update -g terminal-workspace-for-agent
+Update tta CLI:
+npm update -g terminal-tool-for-agents
 
-Update the twa skill from:
-https://raw.githubusercontent.com/yanggggjie/terminal-workspace-for-agent/main/skills/twa/SKILL.md
+Update the tta skill from:
+https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
 
-Kill all twa sessions so the background service restarts on next use:
-twa sess killall
+Kill all tta sessions so the background service restarts on next use:
+tta sess killall
 
 Confirm both are updated.
 ```
 
-## When to use twa vs shell
+## When to use tta vs shell
 
 | Situation | Tool | Kill session? |
 |-----------|------|---------------|
 | Plain / non-interactive command | shell | - |
-| Interactive CLI one-shot (`npm create vite@latest`) | twa | **Yes** when done |
-| Interactive TUI (`lazygit`) | twa | **Yes** when done |
-| Interactive agent (chat context) | twa | **No** until task done |
-| Long-running + logs (`npm run dev`) | twa | **No** while observing |
+| Interactive CLI one-shot (`npm create vite@latest`) | tta | **Yes** when done |
+| Interactive TUI (`lazygit`) | tta | **Yes** when done |
+| Interactive agent (chat context) | tta | **No** until task done |
+| Long-running + logs (`npm run dev`) | tta | **No** while observing |
 
 Kill one-shot sessions promptly when done. Keep agent and dev-server sessions while their context or logs are still useful. Exited processes are removed from `sess list` automatically.
 
 ## Coding agent CLIs
 
-`twa` supports any interactive coding agent CLI. Start the same command you would run in a terminal:
+`tta` supports any interactive coding agent CLI. Start the same command you would run in a terminal:
 
 ```bash
-twa sess start --sess=claude --cmd="claude"
-twa sess start --sess=opencode --cmd="opencode"
-twa sess start --sess=cursor --cmd="cursor agent"
+tta sess start --sess=claude --cmd="claude"
+tta sess start --sess=opencode --cmd="opencode"
+tta sess start --sess=cursor --cmd="cursor agent"
 ```
 
-Busy TUIs may keep a footer or spinner moving. `twa obs screen stable` waits until the PTY screen stops changing.
+Busy TUIs may keep a footer or spinner moving. `tta obs screen stable` waits until the PTY screen stops changing.
 
 ## Examples
 
 ```bash
 # Dev server: keep session, observe with obs
-twa sess start --sess=dev --cmd="npm run dev"
-twa obs screen stable --sess=dev
+tta sess start --sess=dev --cmd="npm run dev"
+tta obs screen stable --sess=dev
 
 # One-shot interactive CLI: kill when done
-twa sess start --sess=vite-once --cmd="npm create vite@latest"
-twa obs screen stable --sess=vite-once
-twa act send key --sess=vite-once --key=enter
-twa obs screen stable --sess=vite-once
-twa sess kill --sess=vite-once
+tta sess start --sess=vite-once --cmd="npm create vite@latest"
+tta obs screen stable --sess=vite-once
+tta act send key --sess=vite-once --key=enter
+tta obs screen stable --sess=vite-once
+tta sess kill --sess=vite-once
 
 # Sub-agent: keep session between turns (prefer --file for prompts)
-twa sess start --sess=sub-agent --cmd="claude"
-twa obs screen stable --sess=sub-agent
-tmp="/tmp/twa-prompt.txt"
+tta sess start --sess=sub-agent --cmd="claude"
+tta obs screen stable --sess=sub-agent
+tmp="/tmp/tta-prompt.txt"
 cat > "$tmp" <<'EOF'
 fix the login bug, run tests, and summarize the changes
 EOF
-twa act send text --sess=sub-agent --file="$tmp"
-twa act send key --sess=sub-agent --key=enter
-twa obs screen stable --sess=sub-agent
+tta act send text --sess=sub-agent --file="$tmp"
+tta act send key --sess=sub-agent --key=enter
+tta obs screen stable --sess=sub-agent
 ```
 
 
 ## APIs
 
-All work happens inside a `twa` session. Lifecycle, input, and observation are separate APIs.
+All work happens inside a `tta` session. Lifecycle, input, and observation are separate APIs.
 
 | API | Commands | Role | stdout on success |
 |-----|----------|------|-------------------|
@@ -132,14 +132,14 @@ On failure, commands print one line: `error: <reason>` and exit with code 1.
 **Workflow:**
 
 ```text
-twa sess start -> (twa act ... -> twa obs screen stable)* -> twa sess kill
+tta sess start -> (tta act ... -> tta obs screen stable)* -> tta sess kill
 ```
 
 - `act` and `obs` both require `--sess=` and assume the session already exists.
-- **Agents should prefer `twa act send text --file=`** — write prompt text to a temp `.txt` file (absolute path), then send it. Use `--text=` only for very short input (e.g. a few words with no special characters).
-- After every `act` that may change the screen, run `twa obs screen stable --sess=...`.
-- Agents use `obs`. Humans use `twa sess watch`.
-Human view: `twa sess watch` -> http://127.0.0.1:7654
+- **Agents should prefer `tta act send text --file=`** — write prompt text to a temp `.txt` file (absolute path), then send it. Use `--text=` only for very short input (e.g. a few words with no special characters).
+- After every `act` that may change the screen, run `tta obs screen stable --sess=...`.
+- Agents use `obs`. Humans use `tta sess watch`.
+Human view: `tta sess watch` -> http://127.0.0.1:7654
 
 ## Parameters
 
@@ -159,25 +159,25 @@ All options use `--name=value`.
 
 ```bash
 # sess: session lifecycle
-twa sess start  --sess=<name> --cmd=<command> [--cwd=<path>]
-twa sess kill   --sess=<name>
-twa sess killall
-twa sess list
-twa sess keys
-twa sess watch   # human-only
+tta sess start  --sess=<name> --cmd=<command> [--cwd=<path>]
+tta sess kill   --sess=<name>
+tta sess killall
+tta sess list
+tta sess keys
+tta sess watch   # human-only
 
 # act: input (session must exist)
-twa act send text --sess=<name> --file=<absolute-path-to-text-file>   # preferred
-twa act send text --sess=<name> --text=<text>                         # very short only
-twa act send key  --sess=<name> --key=<key>
+tta act send text --sess=<name> --file=<absolute-path-to-text-file>   # preferred
+tta act send text --sess=<name> --text=<text>                         # very short only
+tta act send key  --sess=<name> --key=<key>
 
 # obs: read screen (session must exist)
-twa obs screen now    --sess=<name>
-twa obs screen stable --sess=<name>
-twa obs screen scroll --sess=<name> --dire=up|down|top|bottom
+tta obs screen now    --sess=<name>
+tta obs screen stable --sess=<name>
+tta obs screen scroll --sess=<name> --dire=up|down|top|bottom
 ```
 
-Agent skill: [`skills/twa/SKILL.md`](skills/twa/SKILL.md)
+Agent skill: [`skills/tta/SKILL.md`](skills/tta/SKILL.md)
 
 ## Requirements
 
@@ -192,13 +192,13 @@ npm install
 npm approve-scripts node-pty   # if npm warns about allow-scripts; then npm install again
 just test        # build + verify publish layout
 just link        # npm install, build, npm link
-just dev         # tsc --watch; updates dist/ for linked twa
+just dev         # tsc --watch; updates dist/ for linked tta
 ```
 
-If you change background service or session/server code, restart running twa sessions:
+If you change background service or session/server code, restart running tta sessions:
 
 ```bash
-twa sess killall
+tta sess killall
 ```
 
 ## License

@@ -15,7 +15,7 @@ const required = [
   "dist/watch-ui/logo.png",
   "dist/watch-ui/vendor/xterm.css",
   "dist/watch-ui/vendor/xterm.js",
-  "skills/twa/SKILL.md",
+  "skills/tta/SKILL.md",
 ];
 
 function run(cmd) {
@@ -33,17 +33,17 @@ for (const rel of required) {
 }
 
 const { version: pkgVersion } = require(path.join(root, "package.json"));
-const skillContent = fs.readFileSync(path.join(root, "skills/twa/SKILL.md"), "utf8");
+const skillContent = fs.readFileSync(path.join(root, "skills/tta/SKILL.md"), "utf8");
 const skillVersion = skillContent.match(/^version:\s*(.+)$/m)?.[1]?.trim();
 if (skillVersion !== pkgVersion) {
   process.stderr.write(
-    `verify: skills/twa/SKILL.md version (${skillVersion ?? "missing"}) must match package.json (${pkgVersion})\n`
+    `verify: skills/tta/SKILL.md version (${skillVersion ?? "missing"}) must match package.json (${pkgVersion})\n`
   );
   process.exit(1);
 }
 
 const dryRun = execSync("npm pack --dry-run 2>&1", { cwd: root, encoding: "utf8" });
-for (const rel of ["dist/watch-ui/index.html", "dist/cli.js", "skills/twa/SKILL.md"]) {
+for (const rel of ["dist/watch-ui/index.html", "dist/cli.js", "skills/tta/SKILL.md"]) {
   if (!dryRun.includes(rel.replace(/^\//, ""))) {
     process.stderr.write(`verify: npm pack does not include ${rel}\n`);
     process.exit(1);

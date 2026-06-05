@@ -66,7 +66,7 @@ function getSession(name: string): Session | ErrorResponse {
 }
 
 const SESSION_IN_USE_HINT = (name: string) =>
-  `Session "${name}" is already in use. Use a different session name, or run 'twa sess kill --sess=${name}' first.`;
+  `Session "${name}" is already in use. Use a different session name, or run 'tta sess kill --sess=${name}' first.`;
 
 function screenResponse(screen: string): Response {
   return { type: "screen", screen };

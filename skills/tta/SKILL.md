@@ -1,37 +1,37 @@
 ---
-name: twa
+name: tta
 version: 0.1.2
 description: Operate interactive CLI, TUI, dev-server, and coding-agent sessions through a PTY. Use when a command needs keystrokes, redraws a terminal UI, or must be observed between steps. Not for plain bash. APIs: sess, act, obs.
 ---
 
-# twa - terminal workspace for agents
+# tta - terminal tool for agents
 
-`terminal-workspace-for-agent` provides the `twa` command. Use shell for plain non-interactive commands. Use `twa` for interactive programs that need a PTY.
+`terminal-tool-for-agents` provides the `tta` command. Use shell for plain non-interactive commands. Use `tta` for interactive programs that need a PTY.
 
 Idea: start background terminals as `sess`, send keys or text as `act`, then wait for completion and read results as `obs`.
 
 ## When to use
 
-Use `twa` for:
+Use `tta` for:
 
 - Interactive setup commands, such as `npm create vite@latest`.
 - TUIs, such as `lazygit`.
 - Coding agent CLIs, such as `claude`, `opencode`, `codex`, or `cursor agent`.
 - Long-running processes whose terminal output must be observed over time.
 
-Do not use `twa` for plain bash commands that can run to completion without interaction.
+Do not use `tta` for plain bash commands that can run to completion without interaction.
 
 ## Coding agent CLIs
 
 Start the same command you would run in a terminal:
 
 ```bash
-twa sess start --sess=claude-code --cmd="claude"
-twa sess start --sess=opencode --cmd="opencode"
-twa sess start --sess=cursor --cmd="agent"
+tta sess start --sess=claude-code --cmd="claude"
+tta sess start --sess=opencode --cmd="opencode"
+tta sess start --sess=cursor --cmd="agent"
 ```
 
-After `act`, observe the result with `twa obs screen stable`. Busy TUIs with footer spinners may take longer to stabilize.
+After `act`, observe the result with `tta obs screen stable`. Busy TUIs with footer spinners may take longer to stabilize.
 
 ## Three APIs
 
@@ -46,33 +46,33 @@ On failure: one line `error: <reason>` (exit 1).
 **Workflow:** `sess start` -> `(act -> obs screen stable)*` -> `sess kill`
 
 ```bash
-twa sess start --sess=sub-agent --cmd="claude"
-twa obs screen stable --sess=sub-agent
-tmp="/tmp/twa-prompt.txt"
+tta sess start --sess=sub-agent --cmd="claude"
+tta obs screen stable --sess=sub-agent
+tmp="/tmp/tta-prompt.txt"
 cat > "$tmp" <<'EOF'
 run all tests and fix failures
 EOF
-twa act send text --sess=sub-agent --file="$tmp"
-twa act send key --sess=sub-agent --key=enter
-twa obs screen stable --sess=sub-agent
-twa sess kill --sess=sub-agent
+tta act send text --sess=sub-agent --file="$tmp"
+tta act send key --sess=sub-agent --key=enter
+tta obs screen stable --sess=sub-agent
+tta sess kill --sess=sub-agent
 ```
 
 ## Session lifecycle
 
 | Kind | Examples | Kill when done? |
 |------|----------|-----------------|
-| Interactive CLI (one-shot) | `npm create vite@latest` | **Yes** - `twa sess kill --sess=...` |
+| Interactive CLI (one-shot) | `npm create vite@latest` | **Yes** - `tta sess kill --sess=...` |
 | Interactive TUI (one-shot) | `lazygit` | **Yes** |
 | Interactive agent | any coding agent CLI (`claude`, `opencode`, `codex`, etc.) | **No** until task complete (kill loses context) |
 | Long-running + observe | `npm run dev` | **No** while watching logs; kill when dev done |
 
-Name sessions as one lowercase word or 2-3 words joined by `-`, such as `dev`, `vite-once`, `lazy-git`, or `sub-agent`. When the process exits, the session is removed automatically. Use `twa sess kill` to stop early; `twa sess list` shows only running sessions.
+Name sessions as one lowercase word or 2-3 words joined by `-`, such as `dev`, `vite-once`, `lazy-git`, or `sub-agent`. When the process exits, the session is removed automatically. Use `tta sess kill` to stop early; `tta sess list` shows only running sessions.
 
 - `act` / `obs` always need `--sess=` and an existing session.
-- **Prefer `twa act send text --file=`** — write prompt text to a temp `.txt` file (absolute path), then send it. Safer for multiline content, quotes, and shell metacharacters. Use `--text=` only for very short input (e.g. a few words with no special characters).
-- Do not use `twa sess watch`; it is for humans.
-- Do not background `twa` calls. Each call must finish before the next call.
+- **Prefer `tta act send text --file=`** — write prompt text to a temp `.txt` file (absolute path), then send it. Safer for multiline content, quotes, and shell metacharacters. Use `--text=` only for very short input (e.g. a few words with no special characters).
+- Do not use `tta sess watch`; it is for humans.
+- Do not background `tta` calls. Each call must finish before the next call.
 - Do not rely on output from `act`; use `obs` to read the screen.
 
 ## Prompts, choices, and confirmations
@@ -90,20 +90,20 @@ After every `act`, run `obs screen stable` to verify the screen moved on.
 
 ```bash
 # TUI menu: move with arrows, confirm with Enter
-twa act send key --sess=vite-once --key=arrow_down
-twa act send key --sess=vite-once --key=enter
-twa obs screen stable --sess=vite-once
+tta act send key --sess=vite-once --key=arrow_down
+tta act send key --sess=vite-once --key=enter
+tta obs screen stable --sess=vite-once
 
 # Default confirmation — just Enter
-twa act send key --sess=vite-once --key=enter
-twa obs screen stable --sess=vite-once
+tta act send key --sess=vite-once --key=enter
+tta obs screen stable --sess=vite-once
 
 # Stuck on a choice screen — try Enter first
-twa act send key --sess=vite-once --key=enter
-twa obs screen stable --sess=vite-once
+tta act send key --sess=vite-once --key=enter
+tta obs screen stable --sess=vite-once
 ```
 
-Run `twa sess keys` for supported key names.
+Run `tta sess keys` for supported key names.
 
 ## Parameters (`--name=value`)
 
@@ -120,51 +120,51 @@ Run `twa sess keys` for supported key names.
 ## Commands
 
 ```bash
-twa sess start --sess=<name> --cmd=<command> [--cwd=<path>]
-twa sess kill --sess=<name>
-twa sess killall
-twa sess list
-twa sess keys
-twa sess watch   # human-only
+tta sess start --sess=<name> --cmd=<command> [--cwd=<path>]
+tta sess kill --sess=<name>
+tta sess killall
+tta sess list
+tta sess keys
+tta sess watch   # human-only
 
-twa act send text --sess=<name> --file=<absolute-path-to-text-file>   # preferred
-twa act send text --sess=<name> --text=<text>                         # very short only
-twa act send key  --sess=<name> --key=<key>
+tta act send text --sess=<name> --file=<absolute-path-to-text-file>   # preferred
+tta act send text --sess=<name> --text=<text>                         # very short only
+tta act send key  --sess=<name> --key=<key>
 
-twa obs screen now    --sess=<name>
-twa obs screen stable --sess=<name>
-twa obs screen scroll --sess=<name> --dire=<up|down|top|bottom>
+tta obs screen now    --sess=<name>
+tta obs screen stable --sess=<name>
+tta obs screen scroll --sess=<name> --dire=<up|down|top|bottom>
 ```
 
 ## Examples
 
 ```bash
 # One-shot: kill after
-twa sess start --sess=vite-once --cmd="npm create vite@latest"
-twa obs screen stable --sess=vite-once
-twa act send key --sess=vite-once --key=enter
-twa obs screen stable --sess=vite-once
-twa sess kill --sess=vite-once
+tta sess start --sess=vite-once --cmd="npm create vite@latest"
+tta obs screen stable --sess=vite-once
+tta act send key --sess=vite-once --key=enter
+tta obs screen stable --sess=vite-once
+tta sess kill --sess=vite-once
 
 # Sub-agent: keep until done (prefer --file for prompts)
-twa sess start --sess=sub-agent --cmd="claude"
-twa obs screen stable --sess=sub-agent
-tmp="/tmp/twa-prompt.txt"
+tta sess start --sess=sub-agent --cmd="claude"
+tta obs screen stable --sess=sub-agent
+tmp="/tmp/tta-prompt.txt"
 cat > "$tmp" <<'EOF'
 fix bug, run tests, and summarize the changes
 EOF
-twa act send text --sess=sub-agent --file="$tmp"
-twa act send key --sess=sub-agent --key=enter
-twa obs screen stable --sess=sub-agent
+tta act send text --sess=sub-agent --file="$tmp"
+tta act send key --sess=sub-agent --key=enter
+tta obs screen stable --sess=sub-agent
 
 # Very short input only — use --text
-twa act send text --sess=sub-agent --text="yes"
-twa act send key --sess=sub-agent --key=enter
-twa obs screen stable --sess=sub-agent
+tta act send text --sess=sub-agent --text="yes"
+tta act send key --sess=sub-agent --key=enter
+tta obs screen stable --sess=sub-agent
 
 # Dev server: keep, use obs
-twa sess start --sess=dev --cmd="npm run dev"
-twa obs screen stable --sess=dev
-twa sess kill --sess=dev
+tta sess start --sess=dev --cmd="npm run dev"
+tta obs screen stable --sess=dev
+tta sess kill --sess=dev
 ```
 

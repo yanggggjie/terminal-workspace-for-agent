@@ -1,28 +1,28 @@
 {
-  "name": "terminal-workspace-for-agent",
+  "name": "terminal-tool-for-agents",
   "version": "0.1.2",
-  "description": "terminal-workspace-for-agent (twa) — terminal workspace for AI agents. Command: twa. Package: terminal-workspace-for-agent.",
+  "description": "terminal-tool-for-agents (tta) — terminal tool for AI agents. Command: tta. Package: terminal-tool-for-agents.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yanggggjie/terminal-workspace-for-agent.git"
+    "url": "git+https://github.com/yanggggjie/terminal-tool-for-agents.git"
   },
-  "homepage": "https://github.com/yanggggjie/terminal-workspace-for-agent#readme",
+  "homepage": "https://github.com/yanggggjie/terminal-tool-for-agents#readme",
   "bugs": {
-    "url": "https://github.com/yanggggjie/terminal-workspace-for-agent/issues"
+    "url": "https://github.com/yanggggjie/terminal-tool-for-agents/issues"
   },
   "keywords": [
     "tui",
     "pty",
     "terminal",
-    "workspace",
+    "tool",
     "automation",
     "agent",
     "cli",
     "xterm"
   ],
   "bin": {
-    "twa": "./dist/cli.js"
+    "tta": "./dist/cli.js"
   },
   "files": [
     "dist/",

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * twa CLI — sess (session lifecycle), act (input), obs (read screen).
+ * tta CLI — sess (session lifecycle), act (input), obs (read screen).
  * Options use --name=value syntax.
  */
 import * as path from "path";
@@ -13,9 +13,9 @@ import { SUPPORTED_KEYS } from "./keys";
 import { Response, ErrorResponse, ScreenResponse } from "./protocol";
 import { version } from "../package.json";
 
-const COMMAND_NAME = "twa";
+const COMMAND_NAME = "tta";
 const TOP_LEVEL_COMMANDS = new Set(["sess", "act", "obs", "help"]);
-const DOCS_URL = "https://github.com/yanggggjie/terminal-workspace-for-agent";
+const DOCS_URL = "https://github.com/yanggggjie/terminal-tool-for-agents";
 const SCROLL_DIRECTIONS = ["up", "down", "top", "bottom"] as const;
 type ScrollDirection = (typeof SCROLL_DIRECTIONS)[number];
 
@@ -29,18 +29,18 @@ function bold(s: string): string {
 
 const HELP_API = `
 ${bold("API")}    ${bold("Commands")}                              ${bold("Example")}
-${bold("sess")}   start, kill, killall, list, keys      twa sess start --sess=dev --cmd="npm run dev"
-${bold("act")}    send text, send key                   twa act send text --sess=dev --text=hello
-${bold("obs")}    screen now, stable, scroll            twa obs screen stable --sess=dev
+${bold("sess")}   start, kill, killall, list, keys      tta sess start --sess=dev --cmd="npm run dev"
+${bold("act")}    send text, send key                   tta act send text --sess=dev --text=hello
+${bold("obs")}    screen now, stable, scroll            tta obs screen stable --sess=dev
 
 ${bold("Workflow")}:  sess start  →  (act → obs screen stable)*  →  sess kill
-${bold("Watch UI")}:  twa sess watch  (humans only — agents use obs)
+${bold("Watch UI")}:  tta sess watch  (humans only — agents use obs)
 ${bold("Docs")}:      ${DOCS_URL}
 `;
 
 const program = new Command();
 
-const START_EXAMPLE = 'twa sess start --sess=dev --cmd="npm run dev"';
+const START_EXAMPLE = 'tta sess start --sess=dev --cmd="npm run dev"';
 
 function firstPositionalArg(args: string[]): string | undefined {
   for (const a of args) {
@@ -51,7 +51,7 @@ function firstPositionalArg(args: string[]): string | undefined {
 
 function warnWrongTopLevel(got: string): void {
   process.stderr.write(
-    `${RED}Unknown top-level command "${got}". Use twa sess, twa act, or twa obs.${RESET}\n\n`
+    `${RED}Unknown top-level command "${got}". Use tta sess, tta act, or tta obs.${RESET}\n\n`
   );
 }
 
@@ -64,8 +64,8 @@ program
   .description("Tool for agents to operate interactive CLI, TUI, and agent REPLs via PTY")
   .addHelpText(
     "beforeAll",
-    "twa is short for terminal-workspace-for-agent.\n" +
-      "Use twa for interactive programs (prompts, TUI, agent CLIs) — not plain bash.\n"
+    "tta is short for terminal-tool-for-agents.\n" +
+      "Use tta for interactive programs (prompts, TUI, agent CLIs) — not plain bash.\n"
   )
   .addHelpText("afterAll", HELP_API)
   .version(version);
@@ -224,7 +224,7 @@ sess
 
 sess
   .command("keys")
-  .description("List key names for `twa act send key`")
+  .description("List key names for `tta act send key`")
   .action(() => {
     console.log(SUPPORTED_KEYS.join(", "));
   });
@@ -327,7 +327,7 @@ screen
 async function runWatchServer(): Promise<void> {
   if (!process.stdout.isTTY) {
     process.stderr.write(
-      "Error: twa sess watch is for human observation only. Agents must not run this command.\n"
+      "Error: tta sess watch is for human observation only. Agents must not run this command.\n"
     );
     process.exit(1);
   }
@@ -340,7 +340,7 @@ async function runWatchServer(): Promise<void> {
     process.exit(1);
   }
 
-  process.stderr.write("twa sess watch — read-only session observer (Ctrl+C to exit)\n");
+  process.stderr.write("tta sess watch — read-only session observer (Ctrl+C to exit)\n");
   console.log(SERVER_URL);
 
   await new Promise<void>((resolve) => {

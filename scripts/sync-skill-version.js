@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Sync skills/twa/SKILL.md frontmatter version from package.json.
+ * Sync skills/tta/SKILL.md frontmatter version from package.json.
  * Runs on npm "version" lifecycle (before the version git commit).
  */
 const fs = require("fs");
@@ -8,7 +8,7 @@ const path = require("path");
 
 const root = path.join(__dirname, "..");
 const { version } = require(path.join(root, "package.json"));
-const skillPath = path.join(root, "skills/twa/SKILL.md");
+const skillPath = path.join(root, "skills/tta/SKILL.md");
 
 let content = fs.readFileSync(skillPath, "utf8");
 

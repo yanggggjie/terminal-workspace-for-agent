@@ -1,4 +1,4 @@
-window.twaWatch = (function () {
+window.ttaWatch = (function () {
   let term = null;
   let ws = null;
   let activeSession = null;
@@ -20,7 +20,7 @@ window.twaWatch = (function () {
 
     if (sessions.length === 0) {
       container.innerHTML =
-        '<p class="empty">No active sessions. Start one with <code>twa sess start --sess=&lt;name&gt; --cmd="…"</code>.</p>';
+        '<p class="empty">No active sessions. Start one with <code>tta sess start --sess=&lt;name&gt; --cmd="…"</code>.</p>';
       return;
     }
 

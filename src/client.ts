@@ -12,7 +12,7 @@ const SERVER_POLL_INTERVAL_MS = 100;
 const HEALTH_TIMEOUT_MS = 500;
 
 function info(msg: string): void {
-  process.stderr.write(`twa: ${msg}\n`);
+  process.stderr.write(`tta: ${msg}\n`);
 }
 
 export async function ensureServerRunning(): Promise<void> {
