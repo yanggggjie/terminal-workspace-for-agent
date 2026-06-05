@@ -20,7 +20,7 @@ window.ttaWatch = (function () {
 
     if (sessions.length === 0) {
       container.innerHTML =
-        '<p class="empty">No active sessions. Start one with <code>tta sess start --sess=&lt;name&gt; --cmd="…"</code>.</p>';
+        '<p class="empty">No sessions. Start one with <code>tta sess start --sess=&lt;name&gt; --cmd="…"</code>.</p>';
       return;
     }
 
@@ -31,9 +31,11 @@ window.ttaWatch = (function () {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "tab";
+      if (s.status === "exited") btn.classList.add("exited");
       if (s.session_name === activeSession) btn.classList.add("active");
       btn.dataset.session = s.session_name;
-      btn.textContent = s.session_name;
+      btn.textContent =
+        s.status === "exited" ? `${s.session_name} (exited)` : s.session_name;
       nav.appendChild(btn);
     }
 

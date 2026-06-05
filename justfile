@@ -24,7 +24,7 @@ link:
     npm install
     npm run build
     -npm uninstall -g terminal-tool-for-agents
-    npm link
+    npm link --force
     @echo "Linked. Run \`just dev\` in one terminal, then \`tta\` / \`tta sess watch\` in another."
 
 # Restore global install from npm registry

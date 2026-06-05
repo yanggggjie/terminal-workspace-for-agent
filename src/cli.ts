@@ -10,7 +10,7 @@ import { ensureServerRunning, sendRequest } from "./client";
 import { SERVER_URL } from "./server";
 import { validateSessionName } from "./session";
 import { SUPPORTED_KEYS } from "./keys";
-import { Response, ErrorResponse, ScreenResponse } from "./protocol";
+import { Response, ErrorResponse, ScreenResponse, ListResponse } from "./protocol";
 import { version } from "../package.json";
 
 const COMMAND_NAME = "tta";
@@ -70,37 +70,19 @@ program
   .addHelpText("afterAll", HELP_API)
   .version(version);
 
-function parseCommandArgv(command: string): string[] {
-  const args: string[] = [];
-  let current = "";
-  let quote: "'" | '"' | null = null;
-
-  for (let i = 0; i < command.length; i++) {
-    const c = command[i];
-    if (quote) {
-      if (c === quote) {
-        quote = null;
-        continue;
-      }
-      current += c;
-      continue;
-    }
-    if (c === "'" || c === '"') {
-      quote = c;
-      continue;
-    }
-    if (/\s/.test(c)) {
-      if (current) {
-        args.push(current);
-        current = "";
-      }
-      continue;
-    }
-    current += c;
+function formatSessionLine(session: ListResponse["sessions"][number]): string {
+  if (session.status === "exited") {
+    return `${session.session_name} exited exit_code=${session.exit_code ?? 1}`;
   }
+  return `${session.session_name} running`;
+}
 
-  if (current) args.push(current);
-  return args;
+function requireCommandString(cmd: string): string {
+  const command = cmd.trim();
+  if (!command) {
+    replyError(`--cmd= must not be empty. Example: ${START_EXAMPLE}`);
+  }
+  return command;
 }
 
 function replySuccess(): void {
@@ -116,14 +98,6 @@ function requireSession(sess: string): string {
   const err = validateSessionName(sess);
   if (err) replyError(err);
   return sess;
-}
-
-function requireCommandArgv(cmd: string): string[] {
-  const argv = parseCommandArgv(cmd.trim());
-  if (argv.length === 0) {
-    replyError(`--cmd= must not be empty. Example: ${START_EXAMPLE}`);
-  }
-  return argv;
 }
 
 function requireScrollDirection(dir: string): ScrollDirection {
@@ -183,7 +157,7 @@ sess
     const res = await sendRequest({
       type: "start",
       session_name: requireSession(options.sess),
-      command: requireCommandArgv(options.cmd),
+      command: requireCommandString(options.cmd),
       cwd: path.resolve(options.cwd ?? process.cwd()),
     });
     handleOp(res);
@@ -210,16 +184,16 @@ sess
 
 sess
   .command("list")
-  .description("List running sessions (exited processes are removed automatically)")
+  .description("List sessions (running and exited; remove with sess kill)")
   .action(async () => {
     const res = await sendRequest({ type: "list" });
     if (res.type === "error") replyError(res.message);
     if (res.type !== "list") replyError("expected list response");
     if (res.sessions.length === 0) {
-      console.log("No active sessions");
+      console.log("No sessions");
       return;
     }
-    for (const s of res.sessions) console.log(s.session_name);
+    for (const s of res.sessions) console.log(formatSessionLine(s));
   });
 
 sess
@@ -279,7 +253,7 @@ send
 
 const obs = program
   .command("obs")
-  .description("Read screen from a running session (stdout: screen text | error: …)");
+  .description("Read screen from a session (stdout: screen text | error: …)");
 
 const screen = obs.command("screen").description("Read terminal screen content");
 

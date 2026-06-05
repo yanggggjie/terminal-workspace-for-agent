@@ -100,22 +100,35 @@ export function validateCwd(cwd: string): string | null {
   return null;
 }
 
+function shellSpawnArgs(command: string): { file: string; args: string[] } {
+  if (process.platform === "win32") {
+    const comspec = process.env.COMSPEC || "cmd.exe";
+    return { file: comspec, args: ["/d", "/s", "/c", command] };
+  }
+
+  if (process.env.SHELL) {
+    return { file: process.env.SHELL, args: ["-lc", command] };
+  }
+  return { file: "/bin/sh", args: ["-c", command] };
+}
+
 export class Session {
   readonly name: string;
 
   private ptyProcess: pty.IPty;
   private terminal: Terminal;
   private _status: "running" | "exited" = "running";
+  private _exitCode: number | null = null;
   private outputLog: string = "";
   private streamListeners: Array<(data: string) => void> = [];
-  private exitListeners: Array<() => void> = [];
+  private exitListeners: Array<(exitCode: number) => void> = [];
 
-  constructor(name: string, command: string[], options: { cwd: string }) {
+  constructor(name: string, command: string, options: { cwd: string }) {
     this.name = name;
 
     const cols = 120;
     const rows = 30;
-    const [file, ...args] = command;
+    const { file, args } = shellSpawnArgs(command);
 
     this.terminal = new Terminal({ cols, rows, scrollback: 10000, allowProposedApi: true });
 
@@ -132,14 +145,19 @@ export class Session {
       this.appendOutput(data);
     });
 
-    this.ptyProcess.onExit(() => {
+    this.ptyProcess.onExit((e) => {
       this._status = "exited";
-      this.notifyExitListeners();
+      this._exitCode = e.exitCode ?? 1;
+      this.notifyExitListeners(this._exitCode);
     });
   }
 
   get status(): "running" | "exited" {
     return this._status;
+  }
+
+  get exitCode(): number | null {
+    return this._exitCode;
   }
 
   get cols(): number {
@@ -161,7 +179,11 @@ export class Session {
     };
   }
 
-  onExit(listener: () => void): () => void {
+  onExit(listener: (exitCode: number) => void): () => void {
+    if (this._status === "exited" && this._exitCode !== null) {
+      listener(this._exitCode);
+      return () => {};
+    }
     this.exitListeners.push(listener);
     return () => {
       this.exitListeners = this.exitListeners.filter((l) => l !== listener);
@@ -280,7 +302,9 @@ export class Session {
   }
 
   toInfo(): SessionInfo {
-    return { session_name: this.name };
+    const info: SessionInfo = { session_name: this.name, status: this._status };
+    if (this._exitCode !== null) info.exit_code = this._exitCode;
+    return info;
   }
 
   private appendOutput(data: string): void {
@@ -295,11 +319,11 @@ export class Session {
     }
   }
 
-  private notifyExitListeners(): void {
+  private notifyExitListeners(exitCode: number): void {
     const listeners = [...this.exitListeners];
     this.exitListeners = [];
     for (const listener of listeners) {
-      listener();
+      listener(exitCode);
     }
   }
 }

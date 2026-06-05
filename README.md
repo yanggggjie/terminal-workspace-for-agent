@@ -76,7 +76,7 @@ Confirm both are updated.
 | Interactive agent (chat context) | tta | **No** until task done |
 | Long-running + logs (`npm run dev`) | tta | **No** while observing |
 
-Kill one-shot sessions promptly when done. Keep agent and dev-server sessions while their context or logs are still useful. Exited processes are removed from `sess list` automatically.
+Kill one-shot sessions promptly when done. Keep agent and dev-server sessions while their context or logs are still useful. When a process exits, the session remains until `tta sess kill`; use `obs` to read final output or errors first.
 
 ## Coding agent CLIs
 
@@ -123,9 +123,9 @@ All work happens inside a `tta` session. Lifecycle, input, and observation are s
 
 | API | Commands | Role | stdout on success |
 |-----|----------|------|-------------------|
-| **sess** | `start`, `kill`, `killall`, `list`, `keys`, `watch` | Create, stop, list sessions; human watch UI | `success` (list: session names; keys: key names) |
-| **act** | `send text`, `send key` | Send input to a running session | `success` |
-| **obs** | `screen now`, `screen stable`, `screen scroll` | Read screen from a running session | screen text |
+| **sess** | `start`, `kill`, `killall`, `list`, `keys`, `watch` | Create, stop, list sessions; human watch UI | `success` (start/act/kill); list: `name running` / `name exited exit_code=N` |
+| **act** | `send text`, `send key` | Send input to a **running** session | `success` |
+| **obs** | `screen now`, `screen stable`, `screen scroll` | Read screen from a session (running or exited) | screen text |
 
 On failure, commands print one line: `error: <reason>` and exit with code 1.
 
@@ -148,7 +148,7 @@ All options use `--name=value`.
 | Flag | Used by |
 |------|---------|
 | `--sess=` | sess start/kill, act, obs |
-| `--cmd=` | sess start |
+| `--cmd=` | sess start — command line to run in a PTY under `--cwd=` |
 | `--cwd=` | sess start |
 | `--file=` | act send text (preferred) |
 | `--text=` | act send text (very short input only) |
@@ -171,7 +171,7 @@ tta act send text --sess=<name> --file=<absolute-path-to-text-file>   # preferre
 tta act send text --sess=<name> --text=<text>                         # very short only
 tta act send key  --sess=<name> --key=<key>
 
-# obs: read screen (session must exist)
+# obs: read screen (session must exist; works when exited)
 tta obs screen now    --sess=<name>
 tta obs screen stable --sess=<name>
 tta obs screen scroll --sess=<name> --dire=up|down|top|bottom

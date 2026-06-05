@@ -37,9 +37,9 @@ After `act`, observe the result with `tta obs screen stable`. Busy TUIs with foo
 
 | API | Commands | When | stdout |
 |-----|----------|------|--------|
-| **sess** | `start`, `kill`, `killall`, `list`, `keys`, `watch` | Create, stop, list sessions; human watch UI | `success` (list: names; keys: key names) |
-| **act** | `send text`, `send key` | Send input to a running session | `success` |
-| **obs** | `screen now`, `screen stable`, `screen scroll` | Read a running session's screen | screen text |
+| **sess** | `start`, `kill`, `killall`, `list`, `keys`, `watch` | Create, stop, list sessions; human watch UI | `success` (start/act/kill); list: `name running` / `name exited exit_code=N` |
+| **act** | `send text`, `send key` | Send input to a **running** session | `success` |
+| **obs** | `screen now`, `screen stable`, `screen scroll` | Read a session's screen (running or exited) | screen text |
 
 On failure: one line `error: <reason>` (exit 1).
 
@@ -67,7 +67,20 @@ tta sess kill --sess=sub-agent
 | Interactive agent | any coding agent CLI (`claude`, `opencode`, `codex`, etc.) | **No** until task complete (kill loses context) |
 | Long-running + observe | `npm run dev` | **No** while watching logs; kill when dev done |
 
-Name sessions as one lowercase word or 2-3 words joined by `-`, such as `dev`, `vite-once`, `lazy-git`, or `sub-agent`. When the process exits, the session is removed automatically. Use `tta sess kill` to stop early; `tta sess list` shows only running sessions.
+Name sessions as one lowercase word or 2-3 words joined by `-`, such as `dev`, `vite-once`, `lazy-git`, or `sub-agent`.
+
+When the PTY process exits, the session **stays** in `sess list` as `exited` until you run `tta sess kill`. You can still `obs screen` to read errors (e.g. `command not found`) or final output. `act` fails on exited sessions.
+
+- Use `tta sess kill` to remove a session from the registry (running or exited).
+- `sess list` shows `name running` or `name exited exit_code=N`. Check list after start if you need status.
+
+### `--cmd=` (command line)
+
+`sess start` runs `--cmd=` in a PTY under `--cwd=` — the same command line you would type in a terminal. tta handles platform details internally; do not pick or configure a shell.
+
+- Examples: `npm run dev`, `claude`, `npm create vite@latest`, `cursor agent`
+- Pipes, redirects, and `&&` work when the host platform supports them in a normal terminal
+- Quote values with spaces: `--cmd="my command here"`
 
 - `act` / `obs` always need `--sess=` and an existing session.
 - **Prefer `tta act send text --file=`** — write prompt text to a temp `.txt` file (absolute path), then send it. Safer for multiline content, quotes, and shell metacharacters. Use `--text=` only for very short input (e.g. a few words with no special characters).
@@ -166,5 +179,11 @@ tta obs screen stable --sess=sub-agent
 tta sess start --sess=dev --cmd="npm run dev"
 tta obs screen stable --sess=dev
 tta sess kill --sess=dev
+
+# Failed start: obs then kill (check list for status)
+tta sess start --sess=bad --cmd="this-command-does-not-exist"
+tta sess list
+tta obs screen stable --sess=bad
+tta sess kill --sess=bad
 ```
 

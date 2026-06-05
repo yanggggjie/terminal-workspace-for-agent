@@ -48,12 +48,10 @@ function resetIdleTimer(): void {
   idleTimer.unref();
 }
 
-/** Remove session from registry when the PTY process exits. */
-function attachSessionExitCleanup(sessionName: string, session: Session): void {
+/** Keep exited sessions in the registry until sess kill; refresh idle timer on exit. */
+function attachSessionExitHook(session: Session): void {
   session.onExit(() => {
-    if (sessions.delete(sessionName)) {
-      afterSessionRemoved();
-    }
+    resetIdleTimer();
   });
 }
 
@@ -76,7 +74,12 @@ function checkSessionNameAvailable(name: string): Response | null {
   if (startingSessions.has(name)) {
     return { type: "error", message: SESSION_IN_USE_HINT(name) };
   }
-  if (sessions.has(name)) {
+  const existing = sessions.get(name);
+  if (existing) {
+    if (existing.status === "exited") {
+      sessions.delete(name);
+      return null;
+    }
     return { type: "error", message: SESSION_IN_USE_HINT(name) };
   }
   return null;
@@ -123,7 +126,7 @@ export async function handleRequest(req: Request): Promise<Response> {
       const r = req as StartRequest;
       const nameErr = validateSessionName(r.session_name);
       if (nameErr) return { type: "error", message: nameErr };
-      if (!Array.isArray(r.command) || r.command.length === 0) {
+      if (typeof r.command !== "string" || !r.command.trim()) {
         return { type: "error", message: "command required (e.g. npm run dev)" };
       }
       const cwdErr = validateCwd(r.cwd);
@@ -133,10 +136,10 @@ export async function handleRequest(req: Request): Promise<Response> {
 
       startingSessions.add(r.session_name);
       try {
-        const session = new Session(r.session_name, r.command, {
+        const session = new Session(r.session_name, r.command.trim(), {
           cwd: path.resolve(r.cwd),
         });
-        attachSessionExitCleanup(r.session_name, session);
+        attachSessionExitHook(session);
         sessions.set(r.session_name, session);
         resetIdleTimer();
         return { type: "ok" };

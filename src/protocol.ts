@@ -3,10 +3,13 @@
  * Request `type` values match CLI subcommands (e.g. send_text ↔ tta act send text, start ↔ tta sess start).
  */
 
+export type SessionStatus = "running" | "exited";
+
 export interface StartRequest {
   type: "start";
   session_name: string;
-  command: string[];
+  /** Command line to run in a PTY (tta picks the platform shell internally). */
+  command: string;
   cwd: string;
 }
 
@@ -64,6 +67,8 @@ export interface ListRequest {
 
 export interface SessionInfo {
   session_name: string;
+  status: SessionStatus;
+  exit_code?: number;
 }
 
 export interface ListResponse {
