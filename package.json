@@ -26,8 +26,8 @@
   },
   "files": [
     "dist/",
-    "skills/",
-    "docs/",
+    "skills/tta/SKILL.md",
+    "src/watch-ui/logo.png",
     "README.md",
     "LICENSE"
   ],

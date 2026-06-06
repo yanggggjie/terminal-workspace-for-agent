@@ -43,11 +43,60 @@ if (skillVersion !== pkgVersion) {
 }
 
 const dryRun = execSync("npm pack --dry-run 2>&1", { cwd: root, encoding: "utf8" });
-for (const rel of ["dist/watch-ui/index.html", "dist/cli.js", "skills/tta/SKILL.md"]) {
+for (const rel of [
+  "dist/watch-ui/index.html",
+  "dist/cli.js",
+  "skills/tta/SKILL.md",
+  "README.md",
+]) {
   if (!dryRun.includes(rel.replace(/^\//, ""))) {
     process.stderr.write(`verify: npm pack does not include ${rel}\n`);
     process.exit(1);
   }
 }
 
+for (const rel of ["README.zh.md", "skills/tta/SKILL.zh.md"]) {
+  if (dryRun.includes(rel)) {
+    process.stderr.write(`verify: npm pack must not include ${rel}\n`);
+    process.exit(1);
+  }
+}
+
+verifyStdinTextInput();
+
 process.stdout.write("verify: ok\n");
+
+function verifyStdinTextInput() {
+  let out = "";
+  try {
+    out = execSync(`printf 'stdin-ok' | node dist/cli.js act send text --sess=stdin-verify`, {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+  } catch (e) {
+    out = `${e.stdout ?? ""}${e.stderr ?? ""}`;
+  }
+  if (out.includes("Missing text input")) {
+    process.stderr.write("verify: act send text must accept stdin (heredoc/pipe)\n");
+    process.exit(1);
+  }
+
+  try {
+    execSync(`node dist/cli.js act send text --sess=dev --text=removed`, {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    process.stderr.write("verify: act send text must not accept --text\n");
+    process.exit(1);
+  } catch (e) {
+    const errOut = `${e.stdout ?? ""}${e.stderr ?? ""}`;
+    if (!errOut.includes("unknown option '--text=removed'")) {
+      process.stderr.write("verify: expected unknown option error for --text\n");
+      process.exit(1);
+    }
+  }
+}
+
+verifyStdinTextInput();

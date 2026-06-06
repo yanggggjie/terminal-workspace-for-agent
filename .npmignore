@@ -18,3 +18,7 @@ node_modules/
 # Misc
 image.png
 rebuild.js
+
+# Chinese docs (repo only; not published to npm)
+README.zh.md
+skills/tta/SKILL.zh.md

@@ -1,11 +1,12 @@
 <div align="center">
 
-<img src="docs/terminal-tool-for-agents-logo.png" alt="terminal-tool-for-agents, abbreviated as tta" width="520">
+<img src="src/watch-ui/logo.png" alt="terminal-tool-for-agents, abbreviated as tta" width="520">
 
 
 ### **tta: a terminal tool for agents, used by agents to operate interactive terminals.**
 
-[![npm](https://img.shields.io/npm/v/terminal-tool-for-agents.svg)](https://www.npmjs.com/package/terminal-tool-for-agents)
+[![npm](https://img.shields.io/npm/v/terminal-tool-for-agents.svg)](https://www.npmjs.com/package/terminal-tool-for-agents) 
+[中文 README](README.zh.md)
 
 </div>
 
@@ -104,14 +105,12 @@ tta act send key --sess=vite-once --key=enter
 tta obs screen stable --sess=vite-once
 tta sess kill --sess=vite-once
 
-# Sub-agent: keep session between turns (prefer --file for prompts)
+# Sub-agent: keep session between turns (quoted heredoc for prompts)
 tta sess start --sess=sub-agent --cmd="claude"
 tta obs screen stable --sess=sub-agent
-tmp="/tmp/tta-prompt.txt"
-cat > "$tmp" <<'EOF'
+tta act send text --sess=sub-agent <<'EOF'
 fix the login bug, run tests, and summarize the changes
 EOF
-tta act send text --sess=sub-agent --file="$tmp"
 tta act send key --sess=sub-agent --key=enter
 tta obs screen stable --sess=sub-agent
 ```
@@ -136,7 +135,7 @@ tta sess start -> (tta act ... -> tta obs screen stable)* -> tta sess kill
 ```
 
 - `act` and `obs` both require `--sess=` and assume the session already exists.
-- **Agents should prefer `tta act send text --file=`** — write prompt text to a temp `.txt` file (absolute path), then send it. Use `--text=` only for very short input (e.g. a few words with no special characters).
+- **`tta act send text` reads stdin** — use a quoted heredoc (`<<'EOF'`), for short and long prompts alike.
 - After every `act` that may change the screen, run `tta obs screen stable --sess=...`.
 - Agents use `obs`. Humans use `tta sess watch`.
 Human view: `tta sess watch` -> http://127.0.0.1:7654
@@ -150,8 +149,6 @@ All options use `--name=value`.
 | `--sess=` | sess start/kill, act, obs |
 | `--cmd=` | sess start — command line to run in a PTY under `--cwd=` |
 | `--cwd=` | sess start |
-| `--file=` | act send text (preferred) |
-| `--text=` | act send text (very short input only) |
 | `--key=` | act send key |
 | `--dire=` | obs screen scroll |
 
@@ -167,8 +164,7 @@ tta sess keys
 tta sess watch   # human-only
 
 # act: input (session must exist)
-tta act send text --sess=<name> --file=<absolute-path-to-text-file>   # preferred
-tta act send text --sess=<name> --text=<text>                         # very short only
+tta act send text --sess=<name>   # stdin: quoted heredoc
 tta act send key  --sess=<name> --key=<key>
 
 # obs: read screen (session must exist; works when exited)

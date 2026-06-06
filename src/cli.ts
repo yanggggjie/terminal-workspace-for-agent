@@ -18,6 +18,7 @@ const TOP_LEVEL_COMMANDS = new Set(["sess", "act", "obs", "help"]);
 const DOCS_URL = "https://github.com/yanggggjie/terminal-tool-for-agents";
 const SCROLL_DIRECTIONS = ["up", "down", "top", "bottom"] as const;
 type ScrollDirection = (typeof SCROLL_DIRECTIONS)[number];
+const MAX_TEXT_INPUT_BYTES = 1024 * 1024;
 
 const RED = "\x1b[31m";
 const BOLD = "\x1b[1m";
@@ -30,7 +31,7 @@ function bold(s: string): string {
 const HELP_API = `
 ${bold("API")}    ${bold("Commands")}                              ${bold("Example")}
 ${bold("sess")}   start, kill, killall, list, keys      tta sess start --sess=dev --cmd="npm run dev"
-${bold("act")}    send text, send key                   tta act send text --sess=dev --text=hello
+${bold("act")}    send text, send key                   tta act send text --sess=dev  # stdin (heredoc)
 ${bold("obs")}    screen now, stable, scroll            tta obs screen stable --sess=dev
 
 ${bold("Workflow")}:  sess start  →  (act → obs screen stable)*  →  sess kill
@@ -107,26 +108,17 @@ function requireScrollDirection(dir: string): ScrollDirection {
   replyError(`--dire= must be one of: ${SCROLL_DIRECTIONS.join(", ")}`);
 }
 
-function requireTextInput(options: { text?: string; file?: string }): string {
-  const hasText = options.text !== undefined;
-  const hasFile = options.file !== undefined;
-  if (hasText && hasFile) {
-    replyError("Use either --text= or --file=, not both");
+function readStdinText(): string {
+  if (process.stdin.isTTY) {
+    replyError(
+      "Missing text input. Use a quoted heredoc, e.g. tta act send text --sess=dev <<'EOF'\\nhello\\nEOF"
+    );
   }
-  if (!hasText && !hasFile) {
-    replyError("Missing text input. Use --text=<text> or --file=<path>");
+  const data = fs.readFileSync(0, "utf8");
+  if (Buffer.byteLength(data, "utf8") > MAX_TEXT_INPUT_BYTES) {
+    replyError(`Stdin exceeds ${MAX_TEXT_INPUT_BYTES} byte limit`);
   }
-  const file = options.file;
-  if (file !== undefined) {
-    const filePath = path.resolve(file);
-    try {
-      return fs.readFileSync(filePath, "utf8");
-    } catch (e: unknown) {
-      const reason = e instanceof Error ? e.message : String(e);
-      replyError(`Cannot read --file=${filePath}: ${reason}`);
-    }
-  }
-  return options.text ?? "";
+  return data;
 }
 
 function handleOp(res: Response): void {
@@ -220,16 +212,14 @@ const send = act.command("send").description("Send text or key input to a sessio
 
 send
   .command("text")
-  .description("Type text from --text or a UTF-8 file from --file")
+  .description("Type text from stdin (quoted heredoc or pipe)")
   .requiredOption("--sess <name>", "Session name (--sess=dev)")
-  .option("--text <text>", "Text to type (--text=hello)")
-  .option("--file <path>", "Read text from a UTF-8 file (--file=/tmp/prompt.txt)")
-  .action(async (options: { sess: string; text?: string; file?: string }) => {
+  .action(async (options: { sess: string }) => {
     handleOp(
       await sendRequest({
         type: "send_text",
         session_name: requireSession(options.sess),
-        text: requireTextInput(options),
+        text: readStdinText(),
       })
     );
   });
