@@ -19,6 +19,11 @@ dev:
 test:
     npm test
 
+# Release: bump → sync skills → commit → tag → npm publish → push
+# Usage: just release patch | minor | major
+release level:
+    npm run release -- {{level}}
+
 # Build and link global `tta` for local testing
 link:
     npm install

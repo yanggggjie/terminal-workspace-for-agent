@@ -1,0 +1,23 @@
+{
+  "$schema": "https://unpkg.com/release-it@20/schema/release-it.json",
+  "git": {
+    "commitMessage": "${version}",
+    "tagName": "v${version}",
+    "tagAnnotation": "Release ${version}",
+    "requireCleanWorkingDir": true,
+    "requireCommits": true,
+    "addUntrackedFiles": false,
+    "push": true,
+    "pushArgs": ["--follow-tags"]
+  },
+  "hooks": {
+    "before:init": "node scripts/verify.js",
+    "after:bump": "node scripts/sync-skill-version.js"
+  },
+  "npm": {
+    "publish": true
+  },
+  "github": {
+    "release": false
+  }
+}

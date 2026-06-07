@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Sync skill frontmatter versions from package.json.
- * Runs on npm "version" lifecycle (before the version git commit).
+ * Runs in release-it `after:bump` hook (see .release-it.json).
  */
 const fs = require("fs");
 const path = require("path");
