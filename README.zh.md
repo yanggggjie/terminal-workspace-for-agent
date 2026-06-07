@@ -66,9 +66,6 @@ Update tta skills (English only — do NOT install *.zh.md):
 - https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
 - https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/tta-agents-skill.md
 
-Kill all tta sessions so the background service restarts on next use:
-tta sess killall
-
 Confirm CLI and both skills are updated.
 ```
 
@@ -123,19 +120,26 @@ tta sess start -> (tta act ... -> tta obs screen stable)* -> tta sess kill
 ## 环境要求
 
 - **Node.js** 22.x–26.x（`engines`：`>=22.0.0 <27.0.0`）；仓库含 `.nvmrc`（`24`）供本地开发
-- `npm install` 或 `npm install -g` 后，若 npm 对 `node-pty` 提示 allow-scripts，请运行 `npm approve-scripts node-pty` 或 `npm approve-scripts --allow-scripts-pending`，然后重新安装，以便 PTY 原生模块正确安装。
+- 安装时会自动运行 `postinstall`，将 node-pty prebuild 复制到 `build/Release` 并验证 PTY 可用；无需手动 `approve-scripts`
 
 ## 开发
 
+改代码后重新全局安装再测：
+
 ```bash
-just dev 
-just link        # 链接以便全局测试
-just unlink        # 测试完成删除链接
-tta sess watch        # 打开 http://127.0.0.1:7654 观察
+just install
+tta sess list
 ```
 
-- **后端**（`src/*.ts`）：保存 → tsc 重编译 → nodemon 重启 server → 刷新浏览器。
-- **Watch UI**（`src/watch-ui/*`）：保存 → 刷新浏览器（开发模式下直接从 `src/` 提供）。
+仅开发 Watch UI 时（静态文件从 `src/watch-ui/` 提供）：
+
+```bash
+just dev
+tta sess watch   # http://127.0.0.1:7654
+```
+
+- **后端**（`src/*.ts`）：改完 → `just install` → 再跑 `tta`
+- **Watch UI**（`src/watch-ui/*`）：`just dev` 下保存 → 刷新浏览器
 
 ## 许可证
 

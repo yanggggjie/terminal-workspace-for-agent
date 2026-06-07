@@ -40,7 +40,7 @@ All tta work happens inside a **session** (PTY-backed terminal instance): `tta s
 Follow in order; do not skip steps:
 
 1. **Pick the tool** — interactive / TUI / needs step-by-step screen reads → `tta`; otherwise shell
-2. **Start and read** — `tta sess start` (see **Parameter quoting**), then `tta obs screen stable --sess=<name>`
+2. **Start and read** — `tta sess start` (see **Command writing** and **Parameter quoting**), then `tta obs screen stable --sess=<name>`
 3. **Choose input by screen**
    - TUI menu, numbered options, `[Y/n]` → `tta act send key` (keys only, not text)
    - Free-form shell input → quoted heredoc, then Enter:
@@ -92,6 +92,12 @@ Coding agent workers (multi-turn context) — see [`tta-agents-skill.md`](./tta-
 - Do not background `tta` calls; wait for each to finish
 - Do not rely on `act` stdout; use `obs` to read the screen
 - Do not use `tta sess watch`
+
+## Command writing
+
+- Each `tta` command on **one line**; do not use `\` line continuation
+- **No shell variables** in `--cmd=`, `--cwd=`, etc. (`$VAR`); use absolute paths and full command literals
+- `act send text` must use **`<<'EOF'`**; do not use `<<EOF`
 
 ## Parameter quoting
 

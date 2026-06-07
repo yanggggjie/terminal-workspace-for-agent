@@ -15,20 +15,8 @@ function info(msg: string): void {
   process.stderr.write(`tta: ${msg}\n`);
 }
 
-function isDevMode(): boolean {
-  return fs.existsSync(path.join(__dirname, "..", ".tta-dev"));
-}
-
 export async function ensureServerRunning(): Promise<void> {
   if (await isServerReachable()) return;
-
-  if (isDevMode()) {
-    throw new Error(
-      "Dev server is not running.\n" +
-        "  Start it in the project root: just dev\n" +
-        "  Then run tta commands in another terminal."
-    );
-  }
 
   info("starting server...");
   await spawnServer();

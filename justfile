@@ -1,8 +1,7 @@
 # tta local dev — run `just` to list recipes
 #
-#   just dev    — tsc --watch + nodemon server (UI from src/; run before tta)
-#   just link   — build + npm link (global `tta` points here)
-#   just unlink — restore registry global install
+#   just install — build + npm install -g . (test global `tta` after code changes)
+#   just dev     — watch-ui dev server (TTA_DEV=1, serves src/watch-ui/)
 
 _default:
     @just --list
@@ -11,7 +10,13 @@ _default:
 build:
     npm run build
 
-# Dev: compile + auto-restart server; watch-ui served from src/
+# Build + global install from this repo
+install:
+    npm install
+    npm run build
+    npm install -g .
+
+# Watch UI dev: server with src/watch-ui/ (optional; backend changes need `just install`)
 dev:
     npm run dev
 
@@ -23,17 +28,3 @@ test:
 # Usage: just release patch | minor | major
 release level:
     npm run release -- {{level}}
-
-# Build and link global `tta` for local testing
-link:
-    npm install
-    npm run build
-    -npm uninstall -g terminal-tool-for-agents
-    npm link --force
-    @echo "Linked. Run \`just dev\` in one terminal, then \`tta\` / \`tta sess watch\` in another."
-
-# Remove global link/install; reinstall from npm if published
-unlink:
-    -npm uninstall -g terminal-tool-for-agents
-    -npm install -g terminal-tool-for-agents --registry=https://registry.npmjs.org/
-    @echo "Global link removed. If install failed (404), the package is not on npm yet — use \`just link\` for local dev."

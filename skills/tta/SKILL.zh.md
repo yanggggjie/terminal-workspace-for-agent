@@ -40,7 +40,7 @@ tta 的一切操作都在 **Session**（PTY 后台终端实例）内进行：`tt
 按顺序执行，不要跳步：
 
 1. **判断工具** — 交互式 / TUI / 需分步读屏 → `tta`；否则 shell
-2. **启动并读屏** — `tta sess start`（见下方「参数引号」），然后 `tta obs screen stable --sess=<name>`
+2. **启动并读屏** — `tta sess start`（见「命令写法」「参数引号」），然后 `tta obs screen stable --sess=<name>`
 3. **根据屏幕选择输入方式**
    - TUI 菜单、编号选项、`[Y/n]` → `tta act send key`（只用 key，不用 text）
    - 自由输入、shell 输入 → quoted heredoc 发送文本，再 Enter 提交：
@@ -93,6 +93,12 @@ Coding Agent Worker（多轮保留上下文）见 [`tta-agents-skill.zh.md`](./t
 - 不要依赖 `act` 的 stdout；用 `obs` 读屏
 - 不要用 `tta sess watch`
 
+## 命令写法
+
+- 每条 `tta` **单行**，禁止 `\` 换行
+- `--cmd=`、`--cwd=` 等 **禁止 shell 变量**（`$VAR`）；写绝对路径与完整命令字面量
+- `act send text` 必须用 **`<<'EOF'`**，禁止 `<<EOF`
+
 ## 参数引号
 
 | 参数 | 用于 | 引号 |
@@ -118,7 +124,7 @@ tta sess start --sess=vite-once --cmd="npm create vite@latest" --cwd="/Users/you
 tta sess start --sess=lazy --cmd="lazygit" --cwd="/Users/you/project"
 ```
 
-**常见错误：** 多词命令未加引号会被 shell 拆成多段，tta 报 `too many arguments`：
+**常见错误：** 多词 `--cmd=` 未加引号 → `too many arguments`：
 
 ```bash
 # 错误
@@ -150,7 +156,7 @@ my-project-name
 EOF
 ```
 
-**必须用 `<<'EOF'`（带引号）** — 不要用 `<<EOF`，否则 `$()`、`` ` ``、`$var` 会被 shell 展开。
+**必须用 `<<'EOF'`** — 禁止 `<<EOF`（否则 `$()`、`` ` ``、`$var` 会被 shell 展开）。
 
 每次 `act` 后运行 `obs screen stable`。
 

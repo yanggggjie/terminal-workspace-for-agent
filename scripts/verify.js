@@ -39,6 +39,17 @@ function cliOut(shellCmd) {
 
 run("npm run build");
 
+const { findNodePtyRoot, testNodePty } = require("./install.js");
+const ptyRoot = findNodePtyRoot(root);
+if (!ptyRoot) {
+  process.stderr.write("verify: node-pty not found\n");
+  process.exit(1);
+}
+if (!testNodePty(ptyRoot)) {
+  process.stderr.write("verify: node-pty spawn test failed (run npm install / postinstall)\n");
+  process.exit(1);
+}
+
 for (const rel of required) {
   const abs = path.join(root, rel);
   if (!fs.existsSync(abs)) {
@@ -63,6 +74,7 @@ const dryRun = execSync("npm pack --dry-run 2>&1", { cwd: root, encoding: "utf8"
 for (const rel of [
   "dist/watch-ui/index.html",
   "dist/cli.js",
+  "scripts/install.js",
   "skills/tta/SKILL.md",
   "skills/tta/tta-agents-skill.md",
   "README.md",

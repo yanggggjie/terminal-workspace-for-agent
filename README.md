@@ -66,9 +66,6 @@ Update tta skills (English only — do NOT install *.zh.md):
 - https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
 - https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/tta-agents-skill.md
 
-Kill all tta sessions so the background service restarts on next use:
-tta sess killall
-
 Confirm CLI and both skills are updated.
 ```
 
@@ -123,19 +120,26 @@ Operational details: [`skills/tta/SKILL.md`](./skills/tta/SKILL.md).
 ## Requirements
 
 - **Node.js** 22.x–26.x (`engines`: `>=22.0.0 <27.0.0`); repo includes `.nvmrc` (`24`) for local dev
-- After `npm install` or `npm install -g`, if npm warns about allow-scripts for `node-pty`, run `npm approve-scripts node-pty` or `npm approve-scripts --allow-scripts-pending`, then reinstall so the PTY native module installs correctly.
+- Install runs `postinstall` automatically: copies node-pty prebuilds into `build/Release` and verifies the PTY works; no manual `approve-scripts` needed
 
 ## Development
 
+After code changes, reinstall globally and test:
+
 ```bash
-just dev
-just link        # link for global testing
-just unlink      # remove link after testing
-tta sess watch   # open http://127.0.0.1:7654 to observe
+just install
+tta sess list
 ```
 
-- **Backend** (`src/*.ts`): save → tsc recompiles → nodemon restarts server → refresh browser.
-- **Watch UI** (`src/watch-ui/*`): save → refresh browser (served from `src/` in dev).
+Watch UI only (static files from `src/watch-ui/`):
+
+```bash
+just dev
+tta sess watch   # http://127.0.0.1:7654
+```
+
+- **Backend** (`src/*.ts`): change → `just install` → run `tta`
+- **Watch UI** (`src/watch-ui/*`): under `just dev`, save → refresh browser
 
 ## License
 
