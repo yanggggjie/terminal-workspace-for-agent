@@ -3,7 +3,7 @@
 <img src="./src/watch-ui/logo.png" alt="terminal-tool-for-agents, abbreviated as tta" width="520">
 
 
-### **tta：供 Agent 使用的终端工具，让 Agent 操作交互式终端。**
+### **tta：让 Agent 操作交互式终端**
 
 [![npm](https://img.shields.io/npm/v/terminal-tool-for-agents.svg)](https://www.npmjs.com/package/terminal-tool-for-agents)
 
@@ -14,18 +14,14 @@
 
 ## 是什么
 
-`tta` 面向 Agent，驱动交互式终端程序：REPL（如 `GDB`、`IPython`）、TUI（如 `lazygit`）、安装向导（如 `npm create vite`）、持续观察日志的服务（如 `npm run dev`），以及 **Coding Agent CLI**（如 `Claude Code`，见 [**tta-agents**](./docs/zh/tta-agents-docs.md)）。
-
-核心思路：`sess` 启动后台终端 → `act` 发送按键或文本 → `obs` 等待稳定后读屏。
-
-非交互式命令用 `bash`，交互式命令用 `tta`。
+`tta` 让 Agent 能够使用驱动交互式终端程序：REPL（如 `GDB`、`IPython`）、TUI（如 `lazygit`）、安装向导（如 `npm create vite`）、开发服务（如 `npm run dev`），以及 **Coding Agent CLI**（如 `Claude Code`，见 [**tta-agents**](./docs/zh/tta-agents-docs.md)）。
 
 Fork 自 [tui-use](https://github.com/onesuper/tui-use) 并改造为 `tta`。感谢 [onesuper](https://github.com/onesuper) 的原始工作。
 
 
 ## 快速开始
 
-将下面这段复制给你的 Agent：
+**复制给你的 Agent 来安装**：
 
 ```text
 Install tta CLI:
@@ -40,19 +36,29 @@ tta-agents-skill ships with tta skill in the same folder; no separate install.
 Confirm CLI and both skill files are installed.
 ```
 
-然后让 Agent 执行任务：
+**让 Agent 使用tta**：
 
 ```text
 Use tta to run an interactive terminal program and finish the task.
 ```
 
-**人类观察 session：**
+**观察**
 
 ```bash
 tta sess watch
 ```
 
 然后打开 http://127.0.0.1:7654/。
+
+## [tta-agents](./docs/zh/tta-agents-docs.md)
+
+用 tta 控制 Claude Code、Codex、Cursor Agent、OpenCode、Pi、Kimi Code 等 Coding Agent CLI。它可以很轻量，比如让一个 Coding Agent 临时启动另一个 Coding Agent 做 review。
+
+
+## [tta-agents-orchestrator](./docs/zh/tta-agents-orchestrator.md)
+
+完整 `Human -> Orchestrator -> Workers` 工作流，适合长程、多步骤、需要 coder / reviewer / tester 等关注点分离的任务。
+
 
 ## 更新
 
@@ -68,25 +74,6 @@ Update tta skills (English only — do NOT install skills/tta/zh/*.md):
 
 Confirm CLI and both skills are updated.
 ```
-
-## 何时用 tta vs shell
-
-| 场景 | 工具 | 是否 kill session？ |
-|------|------|---------------------|
-| 普通 / 非交互式命令 | shell | - |
-| 一次性交互 CLI（`npm create vite@latest`） | tta | 完成后 **要** |
-| 交互式 TUI（`lazygit`） | tta | 完成后 **要** |
-| 长驻进程 + 观察日志（`npm run dev`） | tta | 观察期间 **不要** |
-
-## [tta-agents](./docs/zh/tta-agents-docs.md)
-
-用 tta 控制 Claude Code、Codex、Cursor Agent、OpenCode、Pi、Kimi Code 等 Coding Agent CLI。它可以很轻量，比如让一个 Coding Agent 临时启动另一个 Coding Agent 做 review。
-
-请清晰告知正在使用 tta 的 Agent 你的权限范围（允许/禁止的操作、目录、是否 deploy 等）。被 tta 控制的 Coding Agent 可能以 auto 模式运行，会把 prompt 当授权执行。
-
-## [tta-agents-orchestrator](./docs/zh/tta-agents-orchestrator.md)
-
-完整 `Human -> Orchestrator -> Workers` 工作流，适合长程、多步骤、需要 coder / reviewer / tester 等关注点分离的任务。
 
 ## API 示例
 

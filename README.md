@@ -3,7 +3,7 @@
 <img src="./src/watch-ui/logo.png" alt="terminal-tool-for-agents, abbreviated as tta" width="520">
 
 
-### **tta: a terminal tool for agents — lets agents operate interactive terminals.**
+### **tta: lets agents operate interactive terminals**
 
 [![npm](https://img.shields.io/npm/v/terminal-tool-for-agents.svg)](https://www.npmjs.com/package/terminal-tool-for-agents)
 
@@ -14,18 +14,14 @@
 
 ## What it is
 
-`tta` is for agents. It drives interactive terminal programs: REPLs (e.g. `GDB`, `IPython`), TUIs (e.g. `lazygit`), setup wizards (e.g. `npm create vite`), long-running processes you observe over time (e.g. `npm run dev`), and **coding agent CLIs** (e.g. Claude Code — see [**tta-agents**](./docs/tta-agents-docs.md)).
-
-Idea: start background terminals as `sess`, send keys or text as `act`, then wait for a stable screen and read results as `obs`.
-
-Use `bash` for non-interactive commands. Use `tta` for interactive ones.
+`tta` lets agents drive interactive terminal programs: REPLs (e.g. `GDB`, `IPython`), TUIs (e.g. `lazygit`), setup wizards (e.g. `npm create vite`), dev servers (e.g. `npm run dev`), and **coding agent CLIs** (e.g. Claude Code — see [**tta-agents**](./docs/tta-agents-docs.md)).
 
 Forked from [tui-use](https://github.com/onesuper/tui-use) and modified for `tta`. Thanks to [onesuper](https://github.com/onesuper) for the original work.
 
 
 ## Quick Start
 
-Copy this block into your agent:
+**Copy this into your agent to install:**
 
 ```text
 Install tta CLI:
@@ -40,19 +36,27 @@ tta-agents-skill ships with tta skill in the same folder; no separate install.
 Confirm CLI and both skill files are installed.
 ```
 
-Then ask your agent to run a task:
+**Ask your agent to use tta:**
 
 ```text
 Use tta to run an interactive terminal program and finish the task.
 ```
 
-**Human session observation:**
+**Observe:**
 
 ```bash
 tta sess watch
 ```
 
 Then open http://127.0.0.1:7654/.
+
+## [tta-agents](./docs/tta-agents-docs.md)
+
+Use tta to control coding agent CLIs such as Claude Code, Codex, Cursor Agent, OpenCode, Pi, and Kimi Code. This can be lightweight, such as asking one coding agent to start another for review.
+
+## [tta-agents-orchestrator](./docs/tta-agents-orchestrator.md)
+
+The full `Human -> Orchestrator -> Workers` workflow, for long multi-step tasks that benefit from separated coder / reviewer / tester roles.
 
 ## Update
 
@@ -68,25 +72,6 @@ Update tta skills (English only — do NOT install skills/tta/zh/*.md):
 
 Confirm CLI and both skills are updated.
 ```
-
-## When to use tta vs shell
-
-| Situation | Tool | Kill session? |
-|-----------|------|---------------|
-| Plain / non-interactive command | shell | - |
-| One-shot interactive CLI (`npm create vite@latest`) | tta | **Yes** when done |
-| Interactive TUI (`lazygit`) | tta | **Yes** when done |
-| Long-running + observe logs (`npm run dev`) | tta | **No** while observing |
-
-## [tta-agents](./docs/tta-agents-docs.md)
-
-Use tta to control coding agent CLIs such as Claude Code, Codex, Cursor Agent, OpenCode, Pi, and Kimi Code. This can be as small as asking one coding agent to start another for review.
-
-Clearly tell the controller your permission scope (allowed/forbidden actions, directories, deploy, etc.). Workers may run in auto mode and treat prompts as authorization.
-
-## [tta-agents-orchestrator](./docs/tta-agents-orchestrator.md)
-
-Use the full `Human -> Orchestrator -> Workers` workflow for long multi-step tasks with separated coder/reviewer/tester workers.
 
 ## API examples
 
