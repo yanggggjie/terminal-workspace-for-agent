@@ -72,7 +72,7 @@ EOF
 tta act send key --sess=worker-review-codex --key=enter
 ```
 
-## Example: single worker
+## Example
 
 ```bash
 tta sess start --sess=worker-review-codex --cmd="codex --sandbox workspace-write --ask-for-approval never" --cwd="/Users/you/project"
@@ -89,16 +89,3 @@ tta obs screen stable --sess=worker-review-codex
 # Read the worker result, summarize it, then kill if no follow-up is needed.
 ```
 
-## Multiple workers and orchestrator workflows
-
-For long, multi-step workflows with coder/reviewer/tester workers, follow [`docs/tta-agents-orchestrator.md`](../../docs/tta-agents-orchestrator.md).
-
-Default rule for one task chain: assign one worker step, wait, summarize, then decide the next worker step. Workers do not talk to each other; relay information through you.
-
-## Failures and fallbacks
-
-- **Worker unresponsive:** `sess list` → `obs screen stable`
-- **Worker overreach:** stop or kill it, then report the user
-- **Wrong tool:** non-coding TUI / dev server / wizard uses base tta skill, not this sub-skill
-
-**Split:** ordinary TUI / dev server → base tta skill; coding agent CLI → this sub-skill; full multi-worker workflow → orchestrator docs.

@@ -72,7 +72,7 @@ EOF
 tta act send key --sess=worker-review-codex --key=enter
 ```
 
-## 示例：单 Worker
+## 示例
 
 ```bash
 tta sess start --sess=worker-review-codex --cmd="codex --sandbox workspace-write --ask-for-approval never" --cwd="/Users/you/project"
@@ -88,17 +88,3 @@ tta act send key --sess=worker-review-codex --key=enter
 tta obs screen stable --sess=worker-review-codex
 # 读取 worker 结果并总结；若无需后续上下文则 kill。
 ```
-
-## 多 Worker 与 Orchestrator 工作流
-
-长程、多步骤、coder/reviewer/tester 分工的工作流，按 [`docs/zh/tta-agents-orchestrator.md`](../../../docs/zh/tta-agents-orchestrator.md) 执行。
-
-同一任务链的默认规则：派一个 worker 步骤，等待，观察，总结，然后再决定下一步。Workers 之间不直接通信；信息由你转述。
-
-## 异常与兜底
-
-- **Worker 无响应：** `sess list` -> `obs screen stable`
-- **Worker 越权：** 中止或 kill，然后报告用户
-- **工具用错：** 非 Coding Agent 的 TUI / dev server / 向导使用基础 tta skill，不用本子 skill
-
-**分工：** 普通 TUI / dev server -> 基础 tta skill；Coding Agent CLI -> 本子 skill；完整多 worker 工作流 -> orchestrator docs。

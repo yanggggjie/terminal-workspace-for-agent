@@ -38,21 +38,6 @@ This differs from many subagent systems where execution is hidden until the fina
 
 Because tta controls the terminal, it can drive any coding agent CLI that works in a PTY: Claude Code, Codex, Cursor Agent, OpenCode, Pi, Kimi Code, and others.
 
-### No SDK integration required
-
-tta-agents does not require provider-specific SDK code. It works with the same commands a human would run in a terminal.
-
-## Roles
-
-| Role | Who | Can use tta? |
-|------|-----|--------------|
-| **Controller** | The current agent using tta | **Yes** |
-| **Worker** | Coding agent CLI started in a tta session | **No** |
-
-Workers are ordinary tta sessions that happen to run coding agent CLIs. Worker prompts must say `Do NOT use tta`.
-
-For a complete Orchestrator / Workers workflow, the controller becomes the Orchestrator. That stronger protocol is documented in [`tta-agents-orchestrator.md`](./tta-agents-orchestrator.md).
-
 ## Basic workflow
 
 ```text

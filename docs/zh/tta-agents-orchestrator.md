@@ -8,7 +8,7 @@
 
 这不是使用 tta-agents 的必选项。如果只是想在 Claude Code 里让 Codex 做一次 review，看 [`tta-agents-docs.md`](./tta-agents-docs.md) 即可。
 
-## 为什么需要这个范式
+## 为什么需要这个
 
 ### 和 subagents 相比
 
@@ -98,4 +98,4 @@ Forbidden:
 
 ## 边界
 
-这个范式适合长程、多步骤、需要关注点分离的任务。对于一次性的简单任务，直接使用单个 tta-agents worker 更轻量。
+适合长程、多步骤、需要关注点分离的任务。对于一次性的简单任务，直接使用单个 tta-agents worker 更轻量。

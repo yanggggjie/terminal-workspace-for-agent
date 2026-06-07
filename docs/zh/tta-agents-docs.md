@@ -38,21 +38,6 @@ tta 选择利用这个共同的 TUI 表面，而不是抽象一套统一 SDK。
 
 只要某个 Coding Agent CLI 能在 PTY 中运行，tta 就可以控制它：Claude Code、Codex、Cursor Agent、OpenCode、Pi、Kimi Code 等。
 
-### 不需要 SDK 集成
-
-tta-agents 不需要 provider-specific SDK。它使用的就是人类平时在终端里使用 agent 的方式。
-
-## 角色
-
-| 角色 | 是谁 | 能否用 tta |
-|------|------|------------|
-| **Controller** | 当前正在用 tta 的 Agent | **能** |
-| **Worker** | 在 tta session 中启动的 Coding Agent CLI | **不能** |
-
-Worker 本质上是普通 tta session，只是里面跑的是 Coding Agent CLI。给 Worker 的 prompt 必须写明 `Do NOT use tta`。
-
-当进入完整 Orchestrator / Workers 工作流时，Controller 就成为 Orchestrator。更强的协议见 [`tta-agents-orchestrator.md`](./tta-agents-orchestrator.md)。
-
 ## 基础工作流
 
 ```text

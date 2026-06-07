@@ -8,7 +8,7 @@ The human defines the goal and the workflow contract. The Orchestrator breaks wo
 
 This is not required for simple tta-agents usage. If you only want Claude Code to ask Codex for a review, use [`tta-agents-docs.md`](./tta-agents-docs.md).
 
-## Why this pattern
+## Why this is needed
 
 ### Compared to subagents
 
@@ -101,4 +101,4 @@ Forbidden:
 
 ## Boundaries
 
-This pattern is best for long-running, multi-step work where separation of concerns helps stability. It is too heavy for one-off tasks where a single coding agent call is enough.
+Best for long-running, multi-step work where separation of concerns helps stability. It is too heavy for one-off tasks where a single coding agent call is enough.
