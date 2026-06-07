@@ -21,7 +21,7 @@ if (!fs.existsSync(xtermRoot)) {
 
 fs.mkdirSync(vendorDir, { recursive: true });
 for (const [from, to] of copies) {
-  const src = path.join(xtermRoot, from);
+  const src = path.isAbsolute(from) ? from : path.join(xtermRoot, from);
   const dest = path.join(vendorDir, to);
   if (!fs.existsSync(src)) {
     process.stderr.write(`copy-watch-vendor: missing ${src}\n`);
