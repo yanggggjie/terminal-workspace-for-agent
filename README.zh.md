@@ -14,7 +14,7 @@
 
 ## 是什么
 
-`tta` 面向 Agent，驱动交互式终端程序：REPL（如 `GDB`、`IPython`）、TUI（如 `lazygit`）、安装向导（如 `npm create vite`）、持续观察日志的服务（如 `npm run dev`），以及 **Coding Agent CLI**（如`Claude Code` 多 Agent 编排见 [**tta-agents**](./docs/tta-agents-docs.zh.md)）。
+`tta` 面向 Agent，驱动交互式终端程序：REPL（如 `GDB`、`IPython`）、TUI（如 `lazygit`）、安装向导（如 `npm create vite`）、持续观察日志的服务（如 `npm run dev`），以及 **Coding Agent CLI**（如 `Claude Code`，见 [**tta-agents**](./docs/zh/tta-agents-docs.md)）。
 
 核心思路：`sess` 启动后台终端 → `act` 发送按键或文本 → `obs` 等待稳定后读屏。
 
@@ -31,7 +31,7 @@ Fork 自 [tui-use](https://github.com/onesuper/tui-use) 并改造为 `tta`。感
 Install tta CLI:
 npm install -g terminal-tool-for-agents
 
-Install tta skills (English only — do NOT install *.zh.md):
+Install tta skills (English only — do NOT install skills/tta/zh/*.md):
 - https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
 - https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/tta-agents-skill.md
 
@@ -62,7 +62,7 @@ tta sess watch
 Update tta CLI:
 npm update -g terminal-tool-for-agents
 
-Update tta skills (English only — do NOT install *.zh.md):
+Update tta skills (English only — do NOT install skills/tta/zh/*.md):
 - https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
 - https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/tta-agents-skill.md
 
@@ -78,9 +78,15 @@ Confirm CLI and both skills are updated.
 | 交互式 TUI（`lazygit`） | tta | 完成后 **要** |
 | 长驻进程 + 观察日志（`npm run dev`） | tta | 观察期间 **不要** |
 
-Coding Agent（保留对话上下文）→ 触发内置 [tta-agents](./docs/tta-agents-docs.zh.md) 子 skill。
+## [tta-agents](./docs/zh/tta-agents-docs.md)
 
-**若用 tta-agents 编排多个 Coding Agent：请清晰告知 Orchestrator 你的权限范围（允许/禁止的操作、目录、是否 deploy 等）。Worker 默认 auto 模式，会把 prompt 当授权执行。** 详见 [tta-agents 文档](./docs/tta-agents-docs.zh.md)。
+用 tta 控制 Claude Code、Codex、Cursor Agent、OpenCode、Pi、Kimi Code 等 Coding Agent CLI。它可以很轻量，比如让一个 Coding Agent 临时启动另一个 Coding Agent 做 review。
+
+请清晰告知正在使用 tta 的 Agent 你的权限范围（允许/禁止的操作、目录、是否 deploy 等）。被 tta 控制的 Coding Agent 可能以 auto 模式运行，会把 prompt 当授权执行。
+
+## [tta-agents-orchestrator](./docs/zh/tta-agents-orchestrator.md)
+
+完整 `Human -> Orchestrator -> Workers` 工作流，适合长程、多步骤、需要 coder / reviewer / tester 等关注点分离的任务。
 
 ## API 示例
 
@@ -115,7 +121,7 @@ tta sess start -> (tta act ... -> tta obs screen stable)* -> tta sess kill
 
 失败时输出一行 `error: <reason>`，退出码为 1。
 
-操作细节见 [`skills/tta/SKILL.zh.md`](./skills/tta/SKILL.zh.md)。
+操作细节见 [`skills/tta/zh/SKILL.md`](./skills/tta/zh/SKILL.md)。
 
 ## 环境要求
 

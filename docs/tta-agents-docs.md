@@ -1,68 +1,101 @@
 # tta-agents
 
-**tta-agents** is an application pattern on top of [tta](../README.md): **Orchestrator + Workers** to coordinate multiple coding agents.
+**tta-agents** is the layer on top of [tta](../README.md) for controlling coding agent CLIs through terminal sessions.
 
-- **tta** (infrastructure) — Session, `sess` / `act` / `obs`, for any interactive terminal
-- **tta-agents** (application layer, **bundled tta sub-skill**) — run coding agent workers in sessions, **serially** scheduled by the Orchestrator
+It is useful even when you only want one agent to briefly use another agent, for example:
 
-`skills/tta/tta-agents-skill.md` ships **with** `skills/tta/SKILL.md` — **no separate install**. Only when the user wants tta to drive coding agents should the agent load and follow [`tta-agents-skill.md`](../skills/tta/tta-agents-skill.md). API basics: [`SKILL.md`](../skills/tta/SKILL.md).
+- Use Codex from Claude Code for a focused review.
+- Use Claude Code from Cursor Agent to implement a small change.
+- Keep a long-running coding agent session and ask it follow-up questions later.
 
----
+For full long-horizon workflows with dedicated coder/reviewer/tester workers, see [`tta-agents-orchestrator.md`](./tta-agents-orchestrator.md).
 
-**If you have permission requirements, tell the Orchestrator clearly and completely** (e.g. allowed/forbidden actions, directories that may be changed, network/install/git push/deploy, etc.). The Orchestrator writes that scope into worker prompts; workers default to **auto mode (no confirmation)** and treat prompts as authorization.
+## Layers
 
----
+| Layer | Purpose | Content |
+|-------|---------|---------|
+| **tta** | Generic terminal control | CLI, `sess` / `act` / `obs`, base skill, base docs |
+| **tta-agents** | Control coding agent CLIs with tta | bundled sub-skill and this doc |
+| **tta-agents-orchestrator** | Full workflow pattern | Orchestrator / Workers example and protocol |
 
-## How the Orchestrator works (core)
+`skills/tta/tta-agents-skill.md` ships **with** `skills/tta/SKILL.md` — **no separate install**. Load it only when the user wants tta to drive coding agent CLIs. API basics stay in [`SKILL.md`](../skills/tta/SKILL.md).
 
-**Orchestrator = the agent currently using tta.** It:
+## Why use tta for coding agents
 
-1. **Manages workers** — `tta sess start` for worker sessions, assign work, read screens, **serially** schedule the task chain
-2. **May also use tta on other sessions** — TUI, wizards, `npm run dev`, etc. (per tta skill, not workers)
-3. **Runs tasks serially** — long multi-step work is split into phases; **only one worker step advances at a time**, then switch to the next worker or send feedback back
+### TUI is the common interface
 
-**Workers do not talk to each other.** The previous worker’s outcome is **read and summarized by the Orchestrator**, who **thinks**, then puts the summary/feedback **into the next worker’s prompt**. Review notes, test results, etc. always go through the Orchestrator.
+Coding agents expose very different SDKs, command flags, permission models, and streaming APIs. Their terminal interfaces are much more similar: start the CLI, type a prompt, wait, read the screen, continue.
 
-### Serial scheduling loop
+tta uses that common TUI surface instead of trying to build a unified SDK abstraction.
 
-```text
-Assign to Worker A → obs until done → Orchestrator reads screen and summarizes
-    → Orchestrator decides next step
-    → Assign to Worker B (or send feedback back to Worker A)
-    → obs until done → …
-    → until phase / full task completes
-```
+### Observable by default
 
-### Multi-step example (phase one)
+The controlling agent can call `tta obs screen stable` to see what the worker is doing and what it returned. A human can also use `tta sess watch` to observe sessions.
 
-| Step | Worker (focus) | Orchestrator |
-|------|----------------|--------------|
-| 1. Implement | `worker-coder` | Assign dev task → wait → **summarize diff/changes** |
-| 2. Review | `worker-reviewer` | Send summary to reviewer → wait → **summarize review feedback** |
-| 3. Fix | `worker-coder` (same session, keep context) | **Relay** review feedback to coder → wait → summarize |
-| 4. Test | `worker-test` | Send change summary to test worker → wait → summarize test results |
+This differs from many subagent systems where execution is hidden until the final result.
 
-Phase two, three, … same pattern. **Multiple workers separate concerns** (write / review / test), but **scheduling is serial**: no review until coder finishes; coder continues only after review completes and the Orchestrator relays feedback.
+### Cross-agent by design
 
-You may keep multiple worker **sessions** open (e.g. coder and reviewer), but **do not** have two workers parallelize the same step.
+Because tta controls the terminal, it can drive any coding agent CLI that works in a PTY: Claude Code, Codex, Cursor Agent, OpenCode, Pi, Kimi Code, and others.
+
+### No SDK integration required
+
+tta-agents does not require provider-specific SDK code. It works with the same commands a human would run in a terminal.
 
 ## Roles
 
 | Role | Who | Can use tta? |
 |------|-----|--------------|
-| **Orchestrator** | **The agent using tta** | **Yes** |
-| **Worker** | Coding agent CLI started by Orchestrator | **No** |
+| **Controller** | The current agent using tta | **Yes** |
+| **Worker** | Coding agent CLI started in a tta session | **No** |
 
-## Session and Worker
+Workers are ordinary tta sessions that happen to run coding agent CLIs. Worker prompts must say `Do NOT use tta`.
 
-| Concept | What | How |
-|---------|------|-----|
-| **Session** | PTY-backed terminal instance | `tta sess start/kill/list`, `--sess=` |
-| **Worker** | Session used to run a coding agent (auto mode) | `tta sess start --sess=worker-<role>-<name> ...` |
+For a complete Orchestrator / Workers workflow, the controller becomes the Orchestrator. That stronger protocol is documented in [`tta-agents-orchestrator.md`](./tta-agents-orchestrator.md).
 
-**Worker ⊆ Session.** Naming: `worker-coder-claude`, `worker-reviewer-codex`, `worker-test-pi`.
+## Basic workflow
 
-## Worker start commands (auto mode)
+```text
+start worker session -> observe screen -> send prompt -> observe until done -> summarize -> kill or keep session
+```
+
+Example: use Codex from another agent for review.
+
+```bash
+tta sess start --sess=worker-review-codex --cmd="codex --sandbox workspace-write --ask-for-approval never" --cwd="/Users/you/project"
+tta obs screen stable --sess=worker-review-codex
+tta act send text --sess=worker-review-codex <<'EOF'
+You are a review worker. Do NOT use tta.
+
+Task: Review the current working tree for correctness bugs and missing tests.
+Working directory: /Users/you/project
+
+Allowed:
+- Read files
+- Run tests
+
+Forbidden:
+- Editing files
+- git push
+- deploy
+- Using tta
+
+When done, summarize findings by severity.
+EOF
+tta act send key --sess=worker-review-codex --key=enter
+tta obs screen stable --sess=worker-review-codex
+```
+
+## Permissions
+
+Workers often run in auto mode. Treat each prompt as an authorization boundary:
+
+- Include the task and working directory.
+- Include explicit `Allowed` and `Forbidden` sections.
+- Always forbid `Using tta`.
+- If the worker exceeds the scope, stop it and report back to the user.
+
+## Worker start commands
 
 | Coding Agent | auto mode command |
 |--------------|-------------------|
@@ -73,23 +106,12 @@ You may keep multiple worker **sessions** open (e.g. coder and reviewer), but **
 | Pi | `pi` |
 | Kimi Code | `kimi --auto` |
 
-Details, permissions, prompt templates: [`tta-agents-skill.md`](../skills/tta/tta-agents-skill.md).
-
-## Example: phase one (write → review → fix → test)
-
-Orchestrator schedules serially; logical order, not parallel:
-
-```text
-1. worker-coder: implement feature → Orchestrator summarizes changes
-2. worker-reviewer: review from Orchestrator’s summary → Orchestrator summarizes feedback
-3. worker-coder: Orchestrator relays review feedback, coder fixes → Orchestrator summarizes
-4. worker-test: Orchestrator sends summary, run tests → Orchestrator summarizes results
-5. If pass, phase two; else Orchestrator decides which step to revisit
-```
+Use the least permissive command that still fits the task and user authorization.
 
 ## When to trigger
 
-- User wants tta to orchestrate coding agent CLIs
-- User mentions Orchestrator, Worker, multi-agent collaboration, write/review/test split
+- User wants to run or control a coding agent CLI through tta.
+- User asks one coding agent to use another coding agent.
+- User mentions workers, multi-agent review, coding/review/test split, or Orchestrator.
 
-TUI, wizards, dev servers, etc. **do not** trigger tta-agents — tta skill alone is enough.
+TUI, setup wizards, dev servers, and REPLs that are not coding agents use only the base tta skill.

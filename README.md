@@ -14,7 +14,7 @@
 
 ## What it is
 
-`tta` is for agents. It drives interactive terminal programs: REPLs (e.g. `GDB`, `IPython`), TUIs (e.g. `lazygit`), setup wizards (e.g. `npm create vite`), long-running processes you observe over time (e.g. `npm run dev`), and **coding agent CLIs** (e.g. Claude Code — multi-agent orchestration see [**tta-agents**](./docs/tta-agents-docs.md)).
+`tta` is for agents. It drives interactive terminal programs: REPLs (e.g. `GDB`, `IPython`), TUIs (e.g. `lazygit`), setup wizards (e.g. `npm create vite`), long-running processes you observe over time (e.g. `npm run dev`), and **coding agent CLIs** (e.g. Claude Code — see [**tta-agents**](./docs/tta-agents-docs.md)).
 
 Idea: start background terminals as `sess`, send keys or text as `act`, then wait for a stable screen and read results as `obs`.
 
@@ -31,7 +31,7 @@ Copy this block into your agent:
 Install tta CLI:
 npm install -g terminal-tool-for-agents
 
-Install tta skills (English only — do NOT install *.zh.md):
+Install tta skills (English only — do NOT install skills/tta/zh/*.md):
 - https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
 - https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/tta-agents-skill.md
 
@@ -62,7 +62,7 @@ Copy this block into your agent:
 Update tta CLI:
 npm update -g terminal-tool-for-agents
 
-Update tta skills (English only — do NOT install *.zh.md):
+Update tta skills (English only — do NOT install skills/tta/zh/*.md):
 - https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
 - https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/tta-agents-skill.md
 
@@ -78,9 +78,15 @@ Confirm CLI and both skills are updated.
 | Interactive TUI (`lazygit`) | tta | **Yes** when done |
 | Long-running + observe logs (`npm run dev`) | tta | **No** while observing |
 
-Coding agent workers (keep chat context) → triggers bundled [tta-agents](./docs/tta-agents-docs.md) sub-skill.
+## [tta-agents](./docs/tta-agents-docs.md)
 
-**If you use tta-agents to orchestrate multiple coding agents: clearly tell the Orchestrator your permission scope (allowed/forbidden actions, directories, deploy, etc.). Workers run in auto mode by default and treat prompts as authorization.** See [tta-agents docs](./docs/tta-agents-docs.md).
+Use tta to control coding agent CLIs such as Claude Code, Codex, Cursor Agent, OpenCode, Pi, and Kimi Code. This can be as small as asking one coding agent to start another for review.
+
+Clearly tell the controller your permission scope (allowed/forbidden actions, directories, deploy, etc.). Workers may run in auto mode and treat prompts as authorization.
+
+## [tta-agents-orchestrator](./docs/tta-agents-orchestrator.md)
+
+Use the full `Human -> Orchestrator -> Workers` workflow for long multi-step tasks with separated coder/reviewer/tester workers.
 
 ## API examples
 

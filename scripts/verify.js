@@ -86,11 +86,12 @@ for (const rel of [
 }
 
 for (const rel of [
-  "docs/README.zh.md",
-  "skills/tta/SKILL.zh.md",
-  "skills/tta/tta-agents-skill.zh.md",
-  "docs/tta-agents-docs.zh.md",
+  "skills/tta/zh/SKILL.md",
+  "skills/tta/zh/tta-agents-skill.md",
+  "docs/zh/tta-agents-docs.md",
+  "docs/zh/tta-agents-orchestrator.md",
   "docs/tta-agents-docs.md",
+  "docs/tta-agents-orchestrator.md",
 ]) {
   if (dryRun.includes(rel)) {
     process.stderr.write(`verify: npm pack must not include ${rel}\n`);

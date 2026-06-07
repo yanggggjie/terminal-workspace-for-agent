@@ -1,14 +1,14 @@
 ---
 name: tta
 version: 0.1.6
-description: "通过 PTY 操作交互式 CLI、TUI、开发服务器 session。当命令需要按键、重绘终端 UI、分步观察输出，或运行 npm create、lazygit、npm run dev 等交互式程序时使用；不用于普通非交互 bash。API：sess、act、obs。内置 tta-agents 子 skill：用户要用 tta 操作 Coding Agent 时按该子 skill 执行。"
+description: "通过 PTY 操作交互式 CLI、TUI、开发服务器 session。当命令需要按键、重绘终端 UI、分步观察输出，或运行 npm create、lazygit、npm run dev 等交互式程序时使用；不用于普通非交互 bash。API：sess、act、obs。内置 tta-agents 子 skill：用 tta 控制 Coding Agent CLI 时按该子 skill 执行。"
 ---
 
 # tta - 供 Agent 使用的终端工具
 
 `terminal-tool-for-agents` 提供 `tta` 命令。普通非交互式命令用 shell；需要 PTY 的交互式程序用 `tta`。
 
-核心思路：`sess` 启动后台终端 → `act` 发送按键或文本 → `obs` 等待稳定后读屏。
+核心思路：`sess` 启动后台终端 -> `act` 发送按键或文本 -> `obs` 等待稳定后读屏。
 
 ## Session
 
@@ -16,9 +16,9 @@ tta 的一切操作都在 **Session**（PTY 后台终端实例）内进行：`tt
 
 ## tta-agents（内置子 skill）
 
-`skills/tta/tta-agents-skill.zh.md` 随 **tta skill 一并提供**，**无需单独安装**。
+`skills/tta/zh/tta-agents-skill.md` 随 **tta skill 一并提供**，**无需单独安装**。
 
-**何时启用：** 用户要用 tta 驱动 Coding Agent CLI（如 Claude Code、Codex、Cursor Agent、Opencode、Pi），或提到 Orchestrator / Worker / 多 Agent 协作时，读取并按 [`tta-agents-skill.zh.md`](./tta-agents-skill.zh.md) 执行；其余交互式终端（TUI、向导、dev server）只按本 skill 即可。
+**何时启用：** 用户要用 tta 驱动 Coding Agent CLI（如 Claude Code、Codex、Cursor Agent、OpenCode、Pi），或要求一个 Coding Agent 使用另一个 Coding Agent 时，读取并按 [`tta-agents-skill.md`](./tta-agents-skill.md) 执行；其余交互式终端（TUI、向导、dev server）只按本 skill 即可。
 
 ## 何时使用
 
@@ -28,7 +28,7 @@ tta 的一切操作都在 **Session**（PTY 后台终端实例）内进行：`tt
 - 交互式安装/初始化，如 `npm create vite@latest`
 - TUI，如 `lazygit`
 - 需要随时间观察终端输出的长驻进程，如 `npm run dev`
-- Coding Agent CLI → 启用内置 [`tta-agents-skill.zh.md`](./tta-agents-skill.zh.md)
+- Coding Agent CLI -> 启用内置 [`tta-agents-skill.md`](./tta-agents-skill.md)
 
 **不要用 `tta`：**
 
@@ -39,11 +39,11 @@ tta 的一切操作都在 **Session**（PTY 后台终端实例）内进行：`tt
 
 按顺序执行，不要跳步：
 
-1. **判断工具** — 交互式 / TUI / 需分步读屏 → `tta`；否则 shell
+1. **判断工具** — 交互式 / TUI / 需分步读屏 -> `tta`；否则 shell
 2. **启动并读屏** — `tta sess start`（见「命令写法」「参数引号」），然后 `tta obs screen stable --sess=<name>`
 3. **根据屏幕选择输入方式**
-   - TUI 菜单、编号选项、`[Y/n]` → `tta act send key`（只用 key，不用 text）
-   - 自由输入、shell 输入 → quoted heredoc 发送文本，再 Enter 提交：
+   - TUI 菜单、编号选项、`[Y/n]` -> `tta act send key`（只用 key，不用 text）
+   - 自由输入、shell 输入 -> quoted heredoc 发送文本，再 Enter 提交：
 
    ```bash
    tta act send text --sess=<name> <<'EOF'
@@ -79,7 +79,7 @@ sess start -> obs screen stable -> (act -> obs screen stable)* -> [sess kill]
 | 一次性交互 TUI | `lazygit` | **是** |
 | 长驻 + 观察 | `npm run dev` | 观察期间 **否**；结束再 kill |
 
-Coding Agent Worker（多轮保留上下文）见 [`tta-agents-skill.zh.md`](./tta-agents-skill.zh.md)。
+Coding Agent Worker（多轮保留上下文）见 [`tta-agents-skill.md`](./tta-agents-skill.md)。
 
 **命名：** 一个小写单词，或 2–3 个单词用 `-` 连接，如 `dev`、`vite-once`。
 
@@ -124,7 +124,7 @@ tta sess start --sess=vite-once --cmd="npm create vite@latest" --cwd="/Users/you
 tta sess start --sess=lazy --cmd="lazygit" --cwd="/Users/you/project"
 ```
 
-**常见错误：** 多词 `--cmd=` 未加引号 → `too many arguments`：
+**常见错误：** 多词 `--cmd=` 未加引号 -> `too many arguments`：
 
 ```bash
 # 错误
@@ -174,14 +174,14 @@ tta obs screen stable --sess=vite-once
 **屏幕卡住（菜单/确认无进展）：**
 
 1. 先 `send key --key=enter`（接受默认 / 确认）
-2. 仍卡住 → 试 `arrow_up` / `arrow_down` 或 `tab`
+2. 仍卡住 -> 试 `arrow_up` / `arrow_down` 或 `tab`
 3. 再 `obs screen stable` 确认是否前进
 
 **`act` 失败：**
 
 1. `tta sess list` 查看 session 是 `running` 还是 `exited`
-2. 若 `exited` → 用 `obs screen stable` 读错误，再 `sess kill`
-3. 若 `running` 但屏幕未变 → 检查是否误用 `send text` 操作 TUI 选项
+2. 若 `exited` -> 用 `obs screen stable` 读错误，再 `sess kill`
+3. 若 `running` 但屏幕未变 -> 检查是否误用 `send text` 操作 TUI 选项
 
 **启动失败（命令不存在、引号错误等）：**
 
@@ -229,4 +229,4 @@ tta obs screen stable --sess=dev
 tta sess kill --sess=dev
 ```
 
-Coding Agent Worker 示例见 [`tta-agents-skill.zh.md`](./tta-agents-skill.zh.md)。
+Coding Agent Worker 示例见 [`tta-agents-skill.md`](./tta-agents-skill.md)。

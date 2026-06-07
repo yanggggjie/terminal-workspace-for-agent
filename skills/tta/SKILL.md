@@ -1,7 +1,7 @@
 ---
 name: tta
 version: 0.1.6
-description: "Operate interactive CLI, TUI, and dev-server sessions through a PTY. Use when a command needs keystrokes, redraws a terminal UI, step-by-step screen reads, or for npm create, lazygit, npm run dev, etc. Not for plain non-interactive bash. APIs: sess, act, obs. Bundled tta-agents sub-skill when the user uses tta with coding agents."
+description: "Operate interactive CLI, TUI, and dev-server sessions through a PTY. Use when a command needs keystrokes, redraws a terminal UI, step-by-step screen reads, or for npm create, lazygit, npm run dev, etc. Not for plain non-interactive bash. APIs: sess, act, obs. Bundled tta-agents sub-skill when using tta to control coding agent CLIs."
 ---
 
 # tta - terminal tool for agents
@@ -18,7 +18,7 @@ All tta work happens inside a **session** (PTY-backed terminal instance): `tta s
 
 `skills/tta/tta-agents-skill.md` ships **with the tta skill** — **no separate install**.
 
-**When to enable:** If the user wants tta to drive coding agent CLIs (Claude Code, Codex, Cursor Agent, OpenCode, Pi, etc.) or mentions Orchestrator / Worker / multi-agent coordination, read and follow [`tta-agents-skill.md`](./tta-agents-skill.md). For other interactive terminals (TUI, wizards, dev servers), this skill alone is enough.
+**When to enable:** If the user wants tta to drive coding agent CLIs (Claude Code, Codex, Cursor Agent, OpenCode, Pi, etc.) or asks one coding agent to use another, read and follow [`tta-agents-skill.md`](./tta-agents-skill.md). For other interactive terminals (TUI, wizards, dev servers), this skill alone is enough.
 
 ## When to use
 

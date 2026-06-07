@@ -21,5 +21,4 @@ rebuild.js
 
 # Chinese docs (repo only; not published to npm)
 docs/
-skills/tta/SKILL.zh.md
-skills/tta/tta-agents-skill.zh.md
+skills/tta/zh/
