@@ -7,11 +7,8 @@ const fs = require("fs");
 const path = require("path");
 
 const root = path.join(__dirname, "..");
+const skillPaths = require("./skill-paths.js").map((rel) => path.join(root, rel));
 const { version } = require(path.join(root, "package.json"));
-const skillPaths = [
-  path.join(root, "skills/tta/SKILL.md"),
-  path.join(root, "skills/tta/tta-agents-skill.md"),
-];
 
 for (const skillPath of skillPaths) {
   let content = fs.readFileSync(skillPath, "utf8");

@@ -1,6 +1,6 @@
 ---
 name: tta-agents
-version: 0.1.2
+version: 0.1.3
 description: Bundled tta sub-skill. When triggered: current agent is Orchestrator; serially schedules multiple workers (separated concerns, e.g. code/review/test). Workers cannot use tta; feedback relayed by Orchestrator. Must obey user permission scope. Use when driving coding agents via tta or when user mentions Orchestrator/Worker.
 ---
 

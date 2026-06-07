@@ -7,6 +7,7 @@ const fs = require("fs");
 const path = require("path");
 
 const root = path.join(__dirname, "..");
+const skillPaths = require("./skill-paths.js");
 const required = [
   "dist/cli.js",
   "dist/server.js",
@@ -47,7 +48,7 @@ for (const rel of required) {
 }
 
 const { version: pkgVersion } = require(path.join(root, "package.json"));
-for (const rel of ["skills/tta/SKILL.md", "skills/tta/tta-agents-skill.md"]) {
+for (const rel of skillPaths) {
   const skillContent = fs.readFileSync(path.join(root, rel), "utf8");
   const skillVersion = skillContent.match(/^version:\s*(.+)$/m)?.[1]?.trim();
   if (skillVersion !== pkgVersion) {
