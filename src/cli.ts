@@ -30,7 +30,7 @@ function bold(s: string): string {
 
 const HELP_API = `
 ${bold("API")}    ${bold("Commands")}                              ${bold("Example")}
-${bold("sess")}   start, kill, killall, list, keys      tta sess start --sess=dev --cmd="npm run dev"
+${bold("sess")}   start, kill, killall, list, keys      tta sess start --sess=dev --cmd="npm run dev" --cwd="/path/to/project"
 ${bold("act")}    send text, send key                   tta act send text --sess=dev  # stdin (heredoc)
 ${bold("obs")}    screen now, stable, scroll            tta obs screen stable --sess=dev
 
@@ -41,7 +41,8 @@ ${bold("Docs")}:      ${DOCS_URL}
 
 const program = new Command();
 
-const START_EXAMPLE = 'tta sess start --sess=dev --cmd="npm run dev"';
+const START_EXAMPLE =
+  'tta sess start --sess=dev --cmd="npm run dev" --cwd="/path/to/project"';
 
 function firstPositionalArg(args: string[]): string | undefined {
   for (const a of args) {
@@ -144,13 +145,14 @@ sess
   .description("Start a session — run an interactive program in a PTY")
   .requiredOption("--sess <name>", "Session name (--sess=dev)")
   .requiredOption("--cmd <command>", 'Command line (--cmd="npm run dev")')
-  .option("--cwd <path>", "Working directory (default: current directory; --cwd=./path)")
-  .action(async (options: { sess: string; cmd: string; cwd?: string }) => {
+  .requiredOption("--cwd <path>", 'Working directory (--cwd="/path/to/project")')
+  .allowExcessArguments(false)
+  .action(async (options: { sess: string; cmd: string; cwd: string }) => {
     const res = await sendRequest({
       type: "start",
       session_name: requireSession(options.sess),
       command: requireCommandString(options.cmd),
-      cwd: path.resolve(options.cwd ?? process.cwd()),
+      cwd: path.resolve(options.cwd),
     });
     handleOp(res);
   });

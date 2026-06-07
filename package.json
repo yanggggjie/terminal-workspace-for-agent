@@ -27,6 +27,7 @@
   "files": [
     "dist/",
     "skills/tta/SKILL.md",
+    "skills/tta/tta-agents-skill.md",
     "src/watch-ui/logo.png",
     "README.md",
     "LICENSE"

@@ -1,26 +1,27 @@
 <div align="center">
 
-<img src="src/watch-ui/logo.png" alt="terminal-tool-for-agents, abbreviated as tta" width="520">
+<img src="./src/watch-ui/logo.png" alt="terminal-tool-for-agents, abbreviated as tta" width="520">
 
 
-### **tta: a terminal tool for agents, used by agents to operate interactive terminals.**
+### **tta: a terminal tool for agents — lets agents operate interactive terminals.**
 
-[![npm](https://img.shields.io/npm/v/terminal-tool-for-agents.svg)](https://www.npmjs.com/package/terminal-tool-for-agents) 
-[中文 README](README.zh.md)
+[![npm](https://img.shields.io/npm/v/terminal-tool-for-agents.svg)](https://www.npmjs.com/package/terminal-tool-for-agents)
+
+[中文 README](./README.zh.md)
 
 </div>
 
-Install the npm package `terminal-tool-for-agents`, then let your agent use the command `tta`.
 
 ## What it is
 
-`tta` is for agents. It lets an agent drive interactive programs through a real PTY: coding agent CLIs, TUIs like `lazygit`, setup wizards like `npm create vite`, and long-running processes you want to observe.
+`tta` is for agents. It drives interactive terminal programs: REPLs (e.g. `GDB`, `IPython`), TUIs (e.g. `lazygit`), setup wizards (e.g. `npm create vite`), long-running processes you observe over time (e.g. `npm run dev`), and **coding agent CLIs** (e.g. Claude Code — multi-agent orchestration see [tta-agents](./docs/tta-agents-docs.md)).
 
-Idea: start background terminals as `sess`, send keys or text as `act`, then wait for completion and read results as `obs`.
+Idea: start background terminals as `sess`, send keys or text as `act`, then wait for a stable screen and read results as `obs`.
 
-Use normal shell tools for plain, non-interactive commands. Use `tta` when the program expects keystrokes, redraws a terminal UI, or needs screen observation between steps.
+Use `bash` for non-interactive commands. Use `tta` for interactive ones.
 
 Forked from [tui-use](https://github.com/onesuper/tui-use) and modified for `tta`. Thanks to [onesuper](https://github.com/onesuper) for the original work.
+
 
 ## Quick Start
 
@@ -31,18 +32,20 @@ Install tta CLI:
 npm install -g terminal-tool-for-agents
 
 Install the tta skill from:
-https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
+https://github.com/yanggggjie/terminal-tool-for-agents/tree/main/skills/tta
+
+(includes bundled tta-agents-skill; no separate install)
 
 Confirm both are installed.
 ```
 
-Then ask your agent to use it:
+Then ask your agent to run a task:
 
 ```text
-Use tta to run an interactive coding agent CLI and finish the task.
+Use tta to run an interactive terminal program and finish the task.
 ```
 
-To watch sessions as a human, run:
+**Human session observation:**
 
 ```bash
 tta sess watch
@@ -59,7 +62,7 @@ Update tta CLI:
 npm update -g terminal-tool-for-agents
 
 Update the tta skill from:
-https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
+https://github.com/yanggggjie/terminal-tool-for-agents/tree/main/skills/tta
 
 Kill all tta sessions so the background service restarts on next use:
 tta sess killall
@@ -72,134 +75,65 @@ Confirm both are updated.
 | Situation | Tool | Kill session? |
 |-----------|------|---------------|
 | Plain / non-interactive command | shell | - |
-| Interactive CLI one-shot (`npm create vite@latest`) | tta | **Yes** when done |
+| One-shot interactive CLI (`npm create vite@latest`) | tta | **Yes** when done |
 | Interactive TUI (`lazygit`) | tta | **Yes** when done |
-| Interactive agent (chat context) | tta | **No** until task done |
-| Long-running + logs (`npm run dev`) | tta | **No** while observing |
+| Long-running + observe logs (`npm run dev`) | tta | **No** while observing |
 
-Kill one-shot sessions promptly when done. Keep agent and dev-server sessions while their context or logs are still useful. When a process exits, the session remains until `tta sess kill`; use `obs` to read final output or errors first.
+Coding agent workers (keep chat context) → triggers bundled [tta-agents](./docs/tta-agents-docs.md) sub-skill.
 
-## Coding agent CLIs
+**If you use tta-agents to orchestrate multiple coding agents: clearly tell the Orchestrator your permission scope (allowed/forbidden actions, directories, deploy, etc.). Workers run in auto mode by default and treat prompts as authorization.** See [tta-agents docs](./docs/tta-agents-docs.md).
 
-`tta` supports any interactive coding agent CLI. Start the same command you would run in a terminal:
+## API examples
 
-```bash
-tta sess start --sess=claude --cmd="claude"
-tta sess start --sess=opencode --cmd="opencode"
-tta sess start --sess=cursor --cmd="cursor agent"
-```
-
-Busy TUIs may keep a footer or spinner moving. `tta obs screen stable` waits until the PTY screen stops changing.
-
-## Examples
+Tip: Be lazy — don’t try it yourself; let the agent do it.
 
 ```bash
 # Dev server: keep session, observe with obs
-tta sess start --sess=dev --cmd="npm run dev"
+tta sess start --sess=dev --cmd="npm run dev" --cwd="/path/to/project"
 tta obs screen stable --sess=dev
 
 # One-shot interactive CLI: kill when done
-tta sess start --sess=vite-once --cmd="npm create vite@latest"
+tta sess start --sess=vite-once --cmd="npm create vite@latest" --cwd="/path/to/project"
 tta obs screen stable --sess=vite-once
 tta act send key --sess=vite-once --key=enter
 tta obs screen stable --sess=vite-once
 tta sess kill --sess=vite-once
-
-# Sub-agent: keep session between turns (quoted heredoc for prompts)
-tta sess start --sess=sub-agent --cmd="claude"
-tta obs screen stable --sess=sub-agent
-tta act send text --sess=sub-agent <<'EOF'
-fix the login bug, run tests, and summarize the changes
-EOF
-tta act send key --sess=sub-agent --key=enter
-tta obs screen stable --sess=sub-agent
 ```
 
+## API overview
 
-## APIs
+All tta work happens inside a **session** (`--sess=`).
 
-All work happens inside a `tta` session. Lifecycle, input, and observation are separate APIs.
-
-| API | Commands | Role | stdout on success |
-|-----|----------|------|-------------------|
-| **sess** | `start`, `kill`, `killall`, `list`, `keys`, `watch` | Create, stop, list sessions; human watch UI | `success` (start/act/kill); list: `name running` / `name exited exit_code=N` |
-| **act** | `send text`, `send key` | Send input to a **running** session | `success` |
-| **obs** | `screen now`, `screen stable`, `screen scroll` | Read screen from a session (running or exited) | screen text |
-
-On failure, commands print one line: `error: <reason>` and exit with code 1.
-
-**Workflow:**
+| API | Commands | Role |
+|-----|----------|------|
+| **sess** | `start`, `kill`, `killall`, `list`, `keys`, `watch` | Create, stop, list sessions; human watch UI |
+| **act** | `send text`, `send key` | Send input to a **running** session |
+| **obs** | `screen now`, `screen stable`, `screen scroll` | Read session screen |
 
 ```text
 tta sess start -> (tta act ... -> tta obs screen stable)* -> tta sess kill
 ```
 
-- `act` and `obs` both require `--sess=` and assume the session already exists.
-- **`tta act send text` reads stdin** — use a quoted heredoc (`<<'EOF'`), for short and long prompts alike.
-- After every `act` that may change the screen, run `tta obs screen stable --sess=...`.
-- Agents use `obs`. Humans use `tta sess watch`.
-Human view: `tta sess watch` -> http://127.0.0.1:7654
+On failure: one line `error: <reason>`, exit code 1.
 
-## Parameters
-
-All options use `--name=value`.
-
-| Flag | Used by |
-|------|---------|
-| `--sess=` | sess start/kill, act, obs |
-| `--cmd=` | sess start — command line to run in a PTY under `--cwd=` |
-| `--cwd=` | sess start |
-| `--key=` | act send key |
-| `--dire=` | obs screen scroll |
-
-## Commands
-
-```bash
-# sess: session lifecycle
-tta sess start  --sess=<name> --cmd=<command> [--cwd=<path>]
-tta sess kill   --sess=<name>
-tta sess killall
-tta sess list
-tta sess keys
-tta sess watch   # human-only
-
-# act: input (session must exist)
-tta act send text --sess=<name>   # stdin: quoted heredoc
-tta act send key  --sess=<name> --key=<key>
-
-# obs: read screen (session must exist; works when exited)
-tta obs screen now    --sess=<name>
-tta obs screen stable --sess=<name>
-tta obs screen scroll --sess=<name> --dire=up|down|top|bottom
-```
-
-Agent skill: [`skills/tta/SKILL.md`](skills/tta/SKILL.md)
+Operational details: [`skills/tta/SKILL.md`](./skills/tta/SKILL.md).
 
 ## Requirements
 
-- **Node.js** 22.x-26.x (`engines`: `>=22.0.0 <27.0.0`); repo includes `.nvmrc` (`24`) for local dev
-- After `npm install` or `npm install -g`, if npm warns about allow-scripts for `node-pty`, run `npm approve-scripts node-pty` or `npm approve-scripts --allow-scripts-pending`, then reinstall so PTY prebuilds can install.
+- **Node.js** 22.x–26.x (`engines`: `>=22.0.0 <27.0.0`); repo includes `.nvmrc` (`24`) for local dev
+- After `npm install` or `npm install -g`, if npm warns about allow-scripts for `node-pty`, run `npm approve-scripts node-pty` or `npm approve-scripts --allow-scripts-pending`, then reinstall so the PTY native module installs correctly.
 
 ## Development
 
 ```bash
-nvm use          # reads .nvmrc (24)
-npm install
-npm approve-scripts node-pty   # if npm warns about allow-scripts; then npm install again
-just test        # build + verify publish layout
-just link        # npm install, build, npm link
-```
-
-Local dev (two terminals):
-
-```bash
-just dev              # terminal 1: tsc --watch + nodemon server
-tta sess watch        # terminal 2: open http://127.0.0.1:7654
+just dev
+just link        # link for global testing
+just unlink      # remove link after testing
+tta sess watch   # open http://127.0.0.1:7654 to observe
 ```
 
 - **Backend** (`src/*.ts`): save → tsc recompiles → nodemon restarts server → refresh browser.
-- **Watch UI** (`src/watch-ui/*`): save → refresh browser (served directly from `src/` in dev).
-- While `just dev` is running, `tta` will not auto-spawn a detached server; start `just dev` first.
+- **Watch UI** (`src/watch-ui/*`): save → refresh browser (served from `src/` in dev).
 
 ## License
 

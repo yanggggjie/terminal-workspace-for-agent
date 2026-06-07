@@ -20,5 +20,6 @@ image.png
 rebuild.js
 
 # Chinese docs (repo only; not published to npm)
-README.zh.md
+docs/
 skills/tta/SKILL.zh.md
+skills/tta/tta-agents-skill.zh.md

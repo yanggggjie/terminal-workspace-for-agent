@@ -20,7 +20,7 @@ window.ttaWatch = (function () {
 
     if (sessions.length === 0) {
       container.innerHTML =
-        '<p class="empty">No sessions. Start one with <code>tta sess start --sess=&lt;name&gt; --cmd="…"</code>.</p>';
+        '<p class="empty">No sessions. Start one with <code>tta sess start --sess=&lt;name&gt; --cmd=&quot;…&quot; --cwd=&quot;/path&quot;</code>.</p>';
       return;
     }
 
