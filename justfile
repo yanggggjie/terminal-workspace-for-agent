@@ -27,8 +27,8 @@ link:
     npm link --force
     @echo "Linked. Run \`just dev\` in one terminal, then \`tta\` / \`tta sess watch\` in another."
 
-# Restore global install from npm registry
+# Remove global link/install; reinstall from npm if published
 unlink:
-    -npm unlink
-    npm install -g terminal-tool-for-agents
-    @echo "Restored npm global tta ($(npm view terminal-tool-for-agents version))."
+    -npm uninstall -g terminal-tool-for-agents
+    -npm install -g terminal-tool-for-agents --registry=https://registry.npmjs.org/
+    @echo "Global link removed. If install failed (404), the package is not on npm yet — use \`just link\` for local dev."

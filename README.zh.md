@@ -14,7 +14,7 @@
 
 ## 是什么
 
-`tta` 面向 Agent，驱动交互式终端程序：REPL（如 `GDB`、`IPython`）、TUI（如 `lazygit`）、安装向导（如 `npm create vite`）、持续观察日志的服务（如 `npm run dev`），以及 **Coding Agent CLI**（如`Claude Code` 多 Agent 编排见 [tta-agents](./docs/tta-agents-docs.zh.md)）。
+`tta` 面向 Agent，驱动交互式终端程序：REPL（如 `GDB`、`IPython`）、TUI（如 `lazygit`）、安装向导（如 `npm create vite`）、持续观察日志的服务（如 `npm run dev`），以及 **Coding Agent CLI**（如`Claude Code` 多 Agent 编排见 [**tta-agents**](./docs/tta-agents-docs.zh.md)）。
 
 核心思路：`sess` 启动后台终端 → `act` 发送按键或文本 → `obs` 等待稳定后读屏。
 

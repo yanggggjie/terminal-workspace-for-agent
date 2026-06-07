@@ -14,7 +14,7 @@
 
 ## What it is
 
-`tta` is for agents. It drives interactive terminal programs: REPLs (e.g. `GDB`, `IPython`), TUIs (e.g. `lazygit`), setup wizards (e.g. `npm create vite`), long-running processes you observe over time (e.g. `npm run dev`), and **coding agent CLIs** (e.g. Claude Code — multi-agent orchestration see [tta-agents](./docs/tta-agents-docs.md)).
+`tta` is for agents. It drives interactive terminal programs: REPLs (e.g. `GDB`, `IPython`), TUIs (e.g. `lazygit`), setup wizards (e.g. `npm create vite`), long-running processes you observe over time (e.g. `npm run dev`), and **coding agent CLIs** (e.g. Claude Code — multi-agent orchestration see [**tta-agents**](./docs/tta-agents-docs.md)).
 
 Idea: start background terminals as `sess`, send keys or text as `act`, then wait for a stable screen and read results as `obs`.
 
