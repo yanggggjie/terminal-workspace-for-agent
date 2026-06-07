@@ -36,7 +36,6 @@
   ],
   "scripts": {
     "build": "node scripts/copy-watch-vendor.js && rm -rf dist && tsc && cp -r src/watch-ui dist/watch-ui && chmod +x dist/cli.js",
-    "dev": "node scripts/dev.mjs",
     "start": "node dist/cli.js",
     "test": "node scripts/verify.js",
     "postinstall": "node scripts/install.js",
@@ -56,8 +55,6 @@
   "devDependencies": {
     "@types/node": "^24.0.0",
     "@types/ws": "^8.18.1",
-    "concurrently": "^9.2.1",
-    "nodemon": "^3.1.11",
     "release-it": "^20.2.0",
     "typescript": "^6.0.0"
   },

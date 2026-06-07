@@ -1,7 +1,7 @@
 # tta local dev — run `just` to list recipes
 #
-#   just install — build + npm install -g . (test global `tta` after code changes)
-#   just dev     — watch-ui dev server (TTA_DEV=1, serves src/watch-ui/)
+#   just install-dev-version — build + npm install -g . (local repo → global `tta`)
+#   just install-npm-version — npm install -g terminal-tool-for-agents (restore published release)
 
 _default:
     @just --list
@@ -10,15 +10,15 @@ _default:
 build:
     npm run build
 
-# Build + global install from this repo
-install:
+# Build + global install from this repo (postinstall runs `tta sess killall`)
+install-dev-version:
     npm install
     npm run build
     npm install -g .
 
-# Watch UI dev: server with src/watch-ui/ (optional; backend changes need `just install`)
-dev:
-    npm run dev
+# Reinstall the published npm release (postinstall runs `tta sess killall`)
+install-npm-version:
+    npm install -g terminal-tool-for-agents
 
 # Build + pack sanity checks
 test:

@@ -124,22 +124,24 @@ tta sess start -> (tta act ... -> tta obs screen stable)* -> tta sess kill
 
 ## 开发
 
-改代码后重新全局安装再测：
+无论改了后端还是 Watch UI，本地开发统一执行：
 
 ```bash
-just install
-tta sess list
+just install-dev-version
 ```
 
-仅开发 Watch UI 时（静态文件从 `src/watch-ui/` 提供）：
+会 build、全局安装当前仓库版本；`postinstall` 会自动 `tta sess killall` 停掉旧 server。
 
 ```bash
-just dev
+tta sess list    # 验证 CLI
 tta sess watch   # http://127.0.0.1:7654
 ```
 
-- **后端**（`src/*.ts`）：改完 → `just install` → 再跑 `tta`
-- **Watch UI**（`src/watch-ui/*`）：`just dev` 下保存 → 刷新浏览器
+切回 npm 上的正式版：
+
+```bash
+just install-npm-version
+```
 
 ## 许可证
 

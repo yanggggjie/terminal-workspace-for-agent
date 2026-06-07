@@ -22,10 +22,7 @@ export const SERVER_HOST = "127.0.0.1";
 export const SERVER_PORT = 7654;
 export const SERVER_URL = `http://${SERVER_HOST}:${SERVER_PORT}`;
 
-const UI_DIR =
-  process.env.TTA_DEV === "1"
-    ? path.join(__dirname, "..", "src", "watch-ui")
-    : path.join(__dirname, "watch-ui");
+const UI_DIR = path.join(__dirname, "watch-ui");
 
 interface StreamInit {
   session_name: string;

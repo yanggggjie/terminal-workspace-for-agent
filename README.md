@@ -124,22 +124,24 @@ Operational details: [`skills/tta/SKILL.md`](./skills/tta/SKILL.md).
 
 ## Development
 
-After code changes, reinstall globally and test:
+For any local change (backend or Watch UI):
 
 ```bash
-just install
-tta sess list
+just install-dev-version
 ```
 
-Watch UI only (static files from `src/watch-ui/`):
+Builds, installs the current repo globally; `postinstall` runs `tta sess killall` to stop the old server.
 
 ```bash
-just dev
+tta sess list    # verify CLI
 tta sess watch   # http://127.0.0.1:7654
 ```
 
-- **Backend** (`src/*.ts`): change → `just install` → run `tta`
-- **Watch UI** (`src/watch-ui/*`): under `just dev`, save → refresh browser
+Restore the published npm release:
+
+```bash
+just install-npm-version
+```
 
 ## License
 
