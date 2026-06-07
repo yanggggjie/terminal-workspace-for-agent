@@ -1,7 +1,7 @@
 ---
 name: tta-agents
 version: 0.1.5
-description: tta skill 内置子 skill。触发后：当前 Agent 即 Orchestrator，串行调度多个 Worker（关注点分离，如写代码/review/测试）。Worker 不能用 tta；反馈由 Orchestrator 转述。须遵守用户权限范围。当用户要用 tta 驱动 Coding Agent 或提到 Orchestrator/Worker 时使用。
+description: "tta skill 内置子 skill。触发后：当前 Agent 即 Orchestrator，串行调度多个 Worker（关注点分离，如写代码/review/测试）。Worker 不能用 tta；反馈由 Orchestrator 转述。须遵守用户权限范围。当用户要用 tta 驱动 Coding Agent 或提到 Orchestrator/Worker 时使用。"
 ---
 
 # tta-agents - 用 tta 编排 Coding Agent

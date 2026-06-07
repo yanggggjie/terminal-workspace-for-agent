@@ -31,12 +31,13 @@ Fork 自 [tui-use](https://github.com/onesuper/tui-use) 并改造为 `tta`。感
 Install tta CLI:
 npm install -g terminal-tool-for-agents
 
-Install the tta skill from:
-https://github.com/yanggggjie/terminal-tool-for-agents/tree/main/skills/tta
+Install tta skills (English only — do NOT install *.zh.md):
+- https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
+- https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/tta-agents-skill.md
 
-(includes bundled tta-agents-skill; no separate install)
+tta-agents-skill ships with tta skill in the same folder; no separate install.
 
-Confirm both are installed.
+Confirm CLI and both skill files are installed.
 ```
 
 然后让 Agent 执行任务：
@@ -61,13 +62,14 @@ tta sess watch
 Update tta CLI:
 npm update -g terminal-tool-for-agents
 
-Update the tta skill from:
-https://github.com/yanggggjie/terminal-tool-for-agents/tree/main/skills/tta
+Update tta skills (English only — do NOT install *.zh.md):
+- https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
+- https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/tta-agents-skill.md
 
 Kill all tta sessions so the background service restarts on next use:
 tta sess killall
 
-Confirm both are updated.
+Confirm CLI and both skills are updated.
 ```
 
 ## 何时用 tta vs shell

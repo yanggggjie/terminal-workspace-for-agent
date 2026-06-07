@@ -1,7 +1,7 @@
 ---
 name: tta
 version: 0.1.5
-description: 通过 PTY 操作交互式 CLI、TUI、开发服务器 session。当命令需要按键、重绘终端 UI、分步观察输出，或运行 npm create、lazygit、npm run dev 等交互式程序时使用；不用于普通非交互 bash。API：sess、act、obs。内置 tta-agents 子 skill：用户要用 tta 操作 Coding Agent 时按该子 skill 执行。
+description: "通过 PTY 操作交互式 CLI、TUI、开发服务器 session。当命令需要按键、重绘终端 UI、分步观察输出，或运行 npm create、lazygit、npm run dev 等交互式程序时使用；不用于普通非交互 bash。API：sess、act、obs。内置 tta-agents 子 skill：用户要用 tta 操作 Coding Agent 时按该子 skill 执行。"
 ---
 
 # tta - 供 Agent 使用的终端工具

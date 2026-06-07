@@ -1,7 +1,7 @@
 ---
 name: tta
 version: 0.1.5
-description: Operate interactive CLI, TUI, and dev-server sessions through a PTY. Use when a command needs keystrokes, redraws a terminal UI, step-by-step screen reads, or for npm create, lazygit, npm run dev, etc. Not for plain non-interactive bash. APIs: sess, act, obs. Bundled tta-agents sub-skill when the user uses tta with coding agents.
+description: "Operate interactive CLI, TUI, and dev-server sessions through a PTY. Use when a command needs keystrokes, redraws a terminal UI, step-by-step screen reads, or for npm create, lazygit, npm run dev, etc. Not for plain non-interactive bash. APIs: sess, act, obs. Bundled tta-agents sub-skill when the user uses tta with coding agents."
 ---
 
 # tta - terminal tool for agents
