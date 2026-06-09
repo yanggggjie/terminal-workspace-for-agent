@@ -1,6 +1,6 @@
 ---
 name: tta
-version: 0.1.7
+version: 0.1.8
 description: "通过 PTY 操作交互式 CLI、TUI、开发服务器 session。当命令需要按键、重绘终端 UI、分步观察输出，或运行 npm create、lazygit、npm run dev 等交互式程序时使用；不用于普通非交互 bash。API：sess、act、obs。内置 tta-agents 子 skill：用 tta 控制 Coding Agent CLI 时按该子 skill 执行。"
 ---
 
@@ -160,6 +160,35 @@ EOF
 
 每次 `act` 后运行 `obs screen stable`。
 
+### REPL 多行输入
+
+不要把复杂多行代码直接逐行丢给 REPL。许多 REPL 会把换行解释成“继续输入”，导致卡在二级提示符或因为粘贴/缩进规则报错。
+
+**通用规则：把多行内容变成 REPL 能一次接收的形式。**
+
+优先级：
+
+1. 不需要保留 REPL 状态时，直接用 shell 跑脚本/命令，不进 REPL。
+2. 需要在 REPL 内执行时，优先用该语言的一条执行入口，例如 Python/IPython 的 `exec("""...""")`、JS 的 `.load`/`.editor`/`eval(...)`、数据库 REPL 的脚本加载命令等。
+3. REPL 支持 paste/editor 模式时，用它；否则写临时脚本文件，再在 REPL 中加载或在 shell 中运行。
+
+Python/IPython 最小示例：
+
+```bash
+tta act send text --sess=pyrepl <<'EOF'
+exec("""
+for i in range(3):
+    print(i)
+""")
+EOF
+tta act send key --sess=pyrepl --key=enter
+tta obs screen stable --sess=pyrepl
+```
+
+IPython 也可用 `%cpaste -q`，粘贴内容最后用单独一行 `--` 结束。
+
+每次提交后用 `obs screen stable` 确认是否回到主提示符；若还在 continuation prompt，先 `ctrl+c` 取消，再换成上面的单条执行或脚本加载方案。
+
 ```bash
 # TUI 菜单
 tta act send key --sess=vite-once --key=arrow_down
@@ -182,6 +211,20 @@ tta obs screen stable --sess=vite-once
 1. `tta sess list` 查看 session 是 `running` 还是 `exited`
 2. 若 `exited` -> 用 `obs screen stable` 读错误，再 `sess kill`
 3. 若 `running` 但屏幕未变 -> 检查是否误用 `send text` 操作 TUI 选项
+
+**heredoc 一直结束不了：**
+
+1. 先按 `ctrl+c` 取消当前输入
+2. 检查结束标记必须顶格：`EOF` 前面不能有空格或 Tab，后面不能有多余字符
+3. 检查开头和结尾标记一致：`<<'EOF'` 必须用单独一行 `EOF` 结束
+4. 若用户的编辑器/聊天复制会自动缩进，改用 `printf ... | tta act send text --sess=<name>` 或写临时文件再重定向
+
+**REPL 卡在多行提示符：**
+
+1. 先用 `obs screen stable` 确认是否出现 `...:`、`...`、`>` 等 continuation prompt
+2. 若只是等块结束，可尝试发送一个空行：`tta act send key --sess=<name> --key=enter`
+3. 仍卡住或代码已错位 -> `tta act send key --sess=<name> --key=ctrl+c`
+4. 重新发送时改用本 skill 的「REPL 多行输入」方案：单条执行、paste/editor 模式，或临时脚本
 
 **启动失败（命令不存在、引号错误等）：**
 

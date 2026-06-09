@@ -1,6 +1,6 @@
 ---
 name: tta
-version: 0.1.7
+version: 0.1.8
 description: "Operate interactive CLI, TUI, and dev-server sessions through a PTY. Use when a command needs keystrokes, redraws a terminal UI, step-by-step screen reads, or for npm create, lazygit, npm run dev, etc. Not for plain non-interactive bash. APIs: sess, act, obs. Bundled tta-agents sub-skill when using tta to control coding agent CLIs."
 ---
 
@@ -160,6 +160,35 @@ EOF
 
 After every `act`, run `obs screen stable`.
 
+### Multi-line REPL input
+
+Do not send complex multi-line code to a REPL line by line. Many REPLs treat newlines as "continue input", which can leave the session at a continuation prompt or fail because of paste/indentation rules.
+
+**General rule: turn multi-line content into a form the REPL can receive as one submission.**
+
+Priority:
+
+1. If REPL state is not needed, run a script/command from the shell instead of entering the REPL.
+2. If code must run inside the REPL, prefer a language-specific single execution entry, such as Python/IPython `exec("""...""")`, JS `.load` / `.editor` / `eval(...)`, database REPL script-loading commands, etc.
+3. If the REPL supports paste/editor mode, use it; otherwise write a temporary script file and load it in the REPL or run it from the shell.
+
+Minimal Python/IPython example:
+
+```bash
+tta act send text --sess=pyrepl <<'EOF'
+exec("""
+for i in range(3):
+    print(i)
+""")
+EOF
+tta act send key --sess=pyrepl --key=enter
+tta obs screen stable --sess=pyrepl
+```
+
+IPython can also use `%cpaste -q`; end the pasted content with a standalone `--` line.
+
+After submitting, use `obs screen stable` to confirm the REPL returned to its main prompt. If it is still at a continuation prompt, send `ctrl+c`, then retry with a single execution entry or script-loading approach.
+
 ```bash
 # TUI menu
 tta act send key --sess=vite-once --key=arrow_down
@@ -182,6 +211,20 @@ Run `tta sess keys` for supported key names.
 1. `tta sess list` — check `running` vs `exited`
 2. If `exited` → `obs screen stable` for errors, then `sess kill`
 3. If `running` but screen unchanged → check whether `send text` was used on a TUI menu by mistake
+
+**Heredoc never finishes:**
+
+1. Press `ctrl+c` to cancel the current input
+2. Check that the end marker is flush-left: no spaces or tabs before `EOF`, and no extra characters after it
+3. Check that the start and end markers match: `<<'EOF'` must end with a standalone `EOF` line
+4. If copy/paste auto-indents the block, use `printf ... | tta act send text --sess=<name>` or write a temporary file and redirect it
+
+**REPL stuck at a continuation prompt:**
+
+1. Use `obs screen stable` to check for prompts like `...:`, `...`, or `>`
+2. If the REPL is just waiting for a block terminator, try an empty line: `tta act send key --sess=<name> --key=enter`
+3. If it is still stuck or the code is misaligned, send `tta act send key --sess=<name> --key=ctrl+c`
+4. Retry using the **Multi-line REPL input** approach: single execution entry, paste/editor mode, or a temporary script
 
 **Start failed (command not found, quoting error, etc.):**
 
