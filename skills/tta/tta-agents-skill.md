@@ -1,6 +1,6 @@
 ---
 name: tta-agents
-version: 0.1.7
+version: 0.1.8
 description: "Bundled tta sub-skill for driving coding agent CLIs through tta sessions. The current agent is the controller; workers are coding agent CLIs and must not use tta. Include task, working directory, Allowed, and Forbidden in worker prompts. For full Orchestrator/Workers workflows, follow the orchestrator docs."
 ---
 
