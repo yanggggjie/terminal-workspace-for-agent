@@ -148,7 +148,7 @@ tta sess start --sess=dev --cmd="npm run dev" --cwd="/tmp"
 
 ### Send text (heredoc)
 
-Same pattern for short and long input; `<<'EOF'` sends content literally to the PTY:
+Same pattern for short and long input; `<<'EOF'` passes stdin through literally to the PTY:
 
 ```bash
 tta act send text --sess=vite-once <<'EOF'
@@ -156,7 +156,7 @@ my-project-name
 EOF
 ```
 
-**Must use `<<'EOF'` (quoted delimiter)** — not `<<EOF`, or `$()`, backticks, and `$var` will be expanded by the shell.
+**Must use `<<'EOF'` (quoted delimiter)** — not `<<EOF`, or `$()`, backticks, and `$var` will be expanded by the shell. tta does not interpret escape characters; literal `\n` and `\t` are sent as-is. Use real newlines when you need newlines.
 
 After every `act`, run `obs screen stable`.
 

@@ -194,11 +194,7 @@ export class Session {
     if (this._status === "exited") {
       throw new Error(`Session ${this.name} has already exited`);
     }
-    const interpreted = text
-      .replace(/\\n/g, "\n")
-      .replace(/\\r/g, "\r")
-      .replace(/\\t/g, "\t");
-    this.ptyProcess.write(interpreted);
+    this.ptyProcess.write(text);
   }
 
   press(key: string): void {
