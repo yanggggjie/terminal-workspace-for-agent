@@ -1,7 +1,7 @@
 ---
 name: tta
 version: 0.1.10
-description: "通过 PTY 操作交互式 CLI、TUI、开发服务器 session。当命令需要按键、重绘终端 UI、分步观察输出，或运行 npm create、lazygit、npm run dev 等交互式程序时使用；不用于普通非交互 bash。API：sess、act、obs。内置 tta-agents 子 skill：用 tta 控制 Coding Agent CLI 时按该子 skill 执行。"
+description: "通过 PTY 操作交互式 CLI、TUI、开发服务器 session。当命令需要按键、重绘终端 UI、分步观察输出，或运行 npm create、lazygit、npm run dev 等交互式程序时使用；不用于普通非交互 bash。API：sess、act、obs。内置 tta-agents 子 skill：用 tta 控制 Coding Agent CLI 时按该子 skill 执行。内置 create-tta-agens-orchestrator 子 skill：创建 Orchestrator.md 时使用。"
 ---
 
 # tta - 供 Agent 使用的终端工具
@@ -16,9 +16,15 @@ tta 的一切操作都在 **Session**（PTY 后台终端实例）内进行：`tt
 
 ## tta-agents（内置子 skill）
 
-`skills/tta/zh/tta-agents-skill.md` 随 **tta skill 一并提供**，**无需单独安装**。
+`tta-agents-skill.md` 随 **tta skill 一并提供**，**无需单独安装**。
 
-**何时启用：** 用户要用 tta 驱动 Coding Agent CLI（如 Claude Code、Codex、Cursor Agent、OpenCode、Pi），或要求一个 Coding Agent 使用另一个 Coding Agent 时，读取并按 [`tta-agents-skill.md`](./tta-agents-skill.md) 执行；其余交互式终端（TUI、向导、dev server）只按本 skill 即可。
+**何时启用：** 用户要用 tta 驱动 Coding Agent CLI（如 Claude Code、Codex、Cursor Agent、OpenCode、Pi），或要求一个 Coding Agent 使用另一个 Coding Agent 时，读取并按 `tta-agents-skill.md` 执行；其余交互式终端（TUI、向导、dev server）只按本 skill 即可。
+
+## create-tta-agens-orchestrator（内置子 skill）
+
+`create-tta-agens-orchestrator-skill.md` 随 **tta skill 一并提供**，**无需单独安装**。
+
+**何时启用：** 用户要创建、更新或设计 `Orchestrator.md`，或要把 tta-agents 固化成 Human -> Orchestrator -> Workers 的项目工作流时，读取并按 `create-tta-agens-orchestrator-skill.md` 执行。
 
 ## 何时使用
 
@@ -28,7 +34,7 @@ tta 的一切操作都在 **Session**（PTY 后台终端实例）内进行：`tt
 - 交互式安装/初始化，如 `npm create vite@latest`
 - TUI，如 `lazygit`
 - 需要随时间观察终端输出的长驻进程，如 `npm run dev`
-- Coding Agent CLI -> 启用内置 [`tta-agents-skill.md`](./tta-agents-skill.md)
+- Coding Agent CLI -> 启用内置 `tta-agents-skill.md`
 
 **不要用 `tta`：**
 
@@ -78,7 +84,7 @@ sess start -> obs screen stable -> (act -> obs screen stable)* -> [sess kill]
 | 一次性交互 TUI | `lazygit` | **是** |
 | 长驻 + 观察 | `npm run dev` | 观察期间 **否**；结束再 kill |
 
-Coding Agent Worker（多轮保留上下文）见 [`tta-agents-skill.md`](./tta-agents-skill.md)。
+Coding Agent Worker（多轮保留上下文）见 `tta-agents-skill.md`。
 
 **命名：** 一个小写单词，或 2–3 个单词用 `-` 连接，如 `dev`、`vite-once`。
 
@@ -276,4 +282,4 @@ tta obs screen stable --sess=dev
 tta sess kill --sess=dev
 ```
 
-Coding Agent Worker 示例见 [`tta-agents-skill.md`](./tta-agents-skill.md)。
+Coding Agent Worker 示例见 `tta-agents-skill.md`。

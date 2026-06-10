@@ -1,14 +1,20 @@
 ---
 name: tta-agents
 version: 0.1.10
-description: "tta skill 内置子 skill，用 tta session 驱动 Coding Agent CLI。当前 Agent 是 controller；worker 是 Coding Agent CLI，不能使用 tta。给 worker 的 prompt 必须包含任务、工作目录、Allowed、Forbidden。完整 Orchestrator/Workers 工作流见 orchestrator docs。"
+description: "tta skill 内置子 skill，用 tta session 驱动 Coding Agent CLI。当前 Agent 是 controller；worker 是 Coding Agent CLI，不能使用 tta。给 worker 的 prompt 必须包含任务、工作目录、Allowed、Forbidden。创建 Orchestrator.md 时使用 create-tta-agens-orchestrator 子 skill。"
 ---
 
 # tta-agents - 用 tta 控制 Coding Agent
 
-**本文件是 [tta skill](./SKILL.md) 的内置子 skill**。
+**本文件是 tta skill 的内置子 skill**。
 
-当用户要用 tta 运行或控制 Coding Agent CLI 时使用。架构见 [`docs/zh/tta-agents-docs.md`](../../../docs/zh/tta-agents-docs.md)。完整 Orchestrator / Workers 工作流见 [`docs/zh/tta-agents-orchestrator.md`](../../../docs/zh/tta-agents-orchestrator.md)。
+当用户要用 tta 运行或控制 Coding Agent CLI 时使用。
+
+如果用户要创建、更新或设计 `Orchestrator.md`，先读取并按 `create-tta-agens-orchestrator-skill.md` 执行。
+
+## 架构
+
+tta-agents 是 tta 之上的一层：用 tta 控制 Coding Agent CLI。例如在 Claude Code 里启动 Codex 做一次 review，或在 Cursor Agent 里启动 Claude Code 实现一小块功能。
 
 ## 角色
 
@@ -86,5 +92,4 @@ Forbidden: editing files, git push, deploy, using tta
 EOF
 tta act send key --sess=worker-review-codex --key=enter
 tta obs screen stable --sess=worker-review-codex
-# 读取 worker 结果并总结；若无需后续上下文则 kill。
 ```

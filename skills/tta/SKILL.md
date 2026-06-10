@@ -1,7 +1,7 @@
 ---
 name: tta
 version: 0.1.10
-description: "Operate interactive CLI, TUI, and dev-server sessions through a PTY. Use when a command needs keystrokes, redraws a terminal UI, step-by-step screen reads, or for npm create, lazygit, npm run dev, etc. Not for plain non-interactive bash. APIs: sess, act, obs. Bundled tta-agents sub-skill when using tta to control coding agent CLIs."
+description: "Operate interactive CLI, TUI, and dev-server sessions through a PTY. Use when a command needs keystrokes, redraws a terminal UI, step-by-step screen reads, or for npm create, lazygit, npm run dev, etc. Not for plain non-interactive bash. APIs: sess, act, obs. Bundled tta-agents sub-skill when using tta to control coding agent CLIs. Bundled create-tta-agens-orchestrator sub-skill when creating Orchestrator.md."
 ---
 
 # tta - terminal tool for agents
@@ -16,9 +16,15 @@ All tta work happens inside a **session** (PTY-backed terminal instance): `tta s
 
 ## tta-agents (bundled sub-skill)
 
-`skills/tta/tta-agents-skill.md` ships **with the tta skill** — **no separate install**.
+`tta-agents-skill.md` ships **with the tta skill** — **no separate install**.
 
-**When to enable:** If the user wants tta to drive coding agent CLIs (Claude Code, Codex, Cursor Agent, OpenCode, Pi, etc.) or asks one coding agent to use another, read and follow [`tta-agents-skill.md`](./tta-agents-skill.md). For other interactive terminals (TUI, wizards, dev servers), this skill alone is enough.
+**When to enable:** If the user wants tta to drive coding agent CLIs (Claude Code, Codex, Cursor Agent, OpenCode, Pi, etc.) or asks one coding agent to use another, read and follow `tta-agents-skill.md`. For other interactive terminals (TUI, wizards, dev servers), this skill alone is enough.
+
+## create-tta-agens-orchestrator (bundled sub-skill)
+
+`create-tta-agens-orchestrator-skill.md` ships **with the tta skill** — **no separate install**.
+
+**When to enable:** If the user wants to create, update, or design `Orchestrator.md`, or wants to turn tta-agents into a project workflow based on Human -> Orchestrator -> Workers, read and follow `create-tta-agens-orchestrator-skill.md`.
 
 ## When to use
 
@@ -28,7 +34,7 @@ All tta work happens inside a **session** (PTY-backed terminal instance): `tta s
 - Interactive setup, e.g. `npm create vite@latest`
 - TUIs, e.g. `lazygit`
 - Long-running processes whose output must be observed over time, e.g. `npm run dev`
-- Coding agent CLIs → enable bundled [`tta-agents-skill.md`](./tta-agents-skill.md)
+- Coding agent CLIs → enable bundled `tta-agents-skill.md`
 
 **Do not use `tta` for:**
 
@@ -78,7 +84,7 @@ On failure: one line `error: <reason>` (exit 1).
 | One-shot interactive TUI | `lazygit` | **Yes** |
 | Long-running + observe | `npm run dev` | **No** while observing; kill when done |
 
-Coding agent workers (multi-turn context) — see [`tta-agents-skill.md`](./tta-agents-skill.md).
+Coding agent workers (multi-turn context) — see `tta-agents-skill.md`.
 
 **Naming:** one lowercase word, or 2–3 words joined by `-`, e.g. `dev`, `vite-once`.
 
@@ -276,4 +282,4 @@ tta obs screen stable --sess=dev
 tta sess kill --sess=dev
 ```
 
-Coding agent worker examples — see [`tta-agents-skill.md`](./tta-agents-skill.md).
+Coding agent worker examples — see `tta-agents-skill.md`.

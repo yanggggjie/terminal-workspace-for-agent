@@ -1,14 +1,20 @@
 ---
 name: tta-agents
 version: 0.1.10
-description: "Bundled tta sub-skill for driving coding agent CLIs through tta sessions. The current agent is the controller; workers are coding agent CLIs and must not use tta. Include task, working directory, Allowed, and Forbidden in worker prompts. For full Orchestrator/Workers workflows, follow the orchestrator docs."
+description: "Bundled tta sub-skill for driving coding agent CLIs through tta sessions. The current agent is the controller; workers are coding agent CLIs and must not use tta. Include task, working directory, Allowed, and Forbidden in worker prompts. When creating Orchestrator.md, use the create-tta-agens-orchestrator sub-skill."
 ---
 
 # tta-agents - control coding agents with tta
 
-**This file is a bundled sub-skill of the [tta skill](./SKILL.md).**
+**This file is a bundled sub-skill of the tta skill.**
 
-Use it when the user wants tta to run or control a coding agent CLI. Architecture: [`docs/tta-agents-docs.md`](../../docs/tta-agents-docs.md). Full Orchestrator / Workers workflows: [`docs/tta-agents-orchestrator.md`](../../docs/tta-agents-orchestrator.md).
+Use it when the user wants tta to run or control a coding agent CLI.
+
+If the user wants to create, update, or design `Orchestrator.md`, first read and follow `create-tta-agens-orchestrator-skill.md`.
+
+## Architecture
+
+tta-agents is a layer on top of tta: it uses tta to control coding agent CLIs. For example, start Codex from Claude Code for a review, or start Claude Code from Cursor Agent to implement a small feature.
 
 ## Roles
 
