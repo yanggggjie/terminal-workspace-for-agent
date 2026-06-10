@@ -43,13 +43,12 @@ Follow in order; do not skip steps:
 2. **Start and read** — `tta sess start` (see **Command writing** and **Parameter quoting**), then `tta obs screen stable --sess=<name>`
 3. **Choose input by screen**
    - TUI menu, numbered options, `[Y/n]` → `tta act send key` (keys only, not text)
-   - Free-form shell input → quoted heredoc, then Enter:
+   - Free-form shell input → quoted heredoc; real newlines in the heredoc are sent as-is, and the trailing newline usually submits:
 
    ```bash
    tta act send text --sess=<name> <<'EOF'
    <your input>
    EOF
-   tta act send key --sess=<name> --key=enter
    ```
 
    Must use `<<'EOF'` (quoted delimiter), not `<<EOF`, or `$`, `()`, and backticks will be expanded by the shell.
@@ -144,7 +143,7 @@ tta sess start --sess=dev --cmd="npm run dev" --cwd="/tmp"
 | Screen | Use |
 |--------|-----|
 | TUI menu, list, `[Y/n]`, numbered choices | `send key` — `arrow_up` / `arrow_down` to move, `enter` to select or confirm |
-| Free-form shell input | `tta act send text --sess=<name> <<'EOF'` … `EOF`, then `send key --key=enter` |
+| Free-form shell input | `tta act send text --sess=<name> <<'EOF'` … `EOF`; the heredoc trailing newline usually submits, so do not send `enter` by default |
 
 ### Send text (heredoc)
 
@@ -158,13 +157,19 @@ EOF
 
 **Must use `<<'EOF'` (quoted delimiter)** — not `<<EOF`, or `$()`, backticks, and `$var` will be expanded by the shell. tta does not interpret escape characters; literal `\n` and `\t` are sent as-is. Use real newlines when you need newlines.
 
+`send text` pastes text literally; it does not type text and then wait for confirmation. Every real newline in a heredoc is written to the PTY. In line-oriented programs such as shells and REPLs, a newline usually submits the current line, similar to pressing Enter.
+
+Only use `tta act send key --sess=<name> --key=enter` explicitly for TUI menus, confirmations, or text input that has no trailing newline but still needs submission.
+
 After every `act`, run `obs screen stable`.
 
 ### Multi-line REPL input
 
-Do not send complex multi-line code to a REPL line by line. Many REPLs treat newlines as "continue input", which can leave the session at a continuation prompt or fail because of paste/indentation rules.
+Do not send complex multi-line code to a REPL line by line. Heredocs send every real newline literally; many REPLs treat each newline as a line submission or continuation, which can leave the session at a continuation prompt or fail because of paste/indentation rules.
 
 **General rule: turn multi-line content into a form the REPL can receive as one submission.**
+
+If you send multi-line code, always keep it readable: preserve normal indentation and line breaks, do not compress it into one hard-to-read line, and do not use escaping that destroys the code structure.
 
 Priority:
 
@@ -181,7 +186,6 @@ for i in range(3):
     print(i)
 """)
 EOF
-tta act send key --sess=pyrepl --key=enter
 tta obs screen stable --sess=pyrepl
 ```
 

@@ -43,13 +43,12 @@ tta 的一切操作都在 **Session**（PTY 后台终端实例）内进行：`tt
 2. **启动并读屏** — `tta sess start`（见「命令写法」「参数引号」），然后 `tta obs screen stable --sess=<name>`
 3. **根据屏幕选择输入方式**
    - TUI 菜单、编号选项、`[Y/n]` -> `tta act send key`（只用 key，不用 text）
-   - 自由输入、shell 输入 -> quoted heredoc 发送文本，再 Enter 提交：
+   - 自由输入、shell 输入 -> quoted heredoc 发送文本；heredoc 中的真实换行会原样发送，末尾换行通常会提交：
 
    ```bash
    tta act send text --sess=<name> <<'EOF'
    <你的输入>
    EOF
-   tta act send key --sess=<name> --key=enter
    ```
 
    必须用 `<<'EOF'`（带引号），不要用 `<<EOF`，否则 `$`、`()`、反引号会被 shell 展开。
@@ -144,7 +143,7 @@ tta sess start --sess=dev --cmd="npm run dev" --cwd="/tmp"
 | 屏幕类型 | 用法 |
 |----------|------|
 | TUI 菜单、列表、`[Y/n]`、编号选项 | `send key` — `arrow_up` / `arrow_down` 移动，`enter` 选择或确认 |
-| 自由输入、shell 输入 | `tta act send text --sess=<name> <<'EOF'` … `EOF`，再 `send key --key=enter` |
+| 自由输入、shell 输入 | `tta act send text --sess=<name> <<'EOF'` … `EOF`；heredoc 末尾换行通常已提交，不要默认再发 `enter` |
 
 ### 发送文本（heredoc）
 
@@ -158,11 +157,15 @@ EOF
 
 **必须用 `<<'EOF'`** — 禁止 `<<EOF`（否则 `$()`、`` ` ``、`$var` 会被 shell 展开）。tta 不解释转义字符；字面 `\n`、`\t` 会按原样发送，需要换行就写真实换行。
 
+`send text` 是原样粘贴文本，不是“输入后等待确认”。heredoc 中的每个真实换行都会写入 PTY；在 shell、REPL 等行输入程序里，换行通常会提交当前行，类似按 Enter。
+
+只有 TUI、菜单、确认框，或文本本身不带末尾换行但需要提交时，才显式使用 `tta act send key --sess=<name> --key=enter`。
+
 每次 `act` 后运行 `obs screen stable`。
 
 ### REPL 多行输入
 
-不要把复杂多行代码直接逐行丢给 REPL。许多 REPL 会把换行解释成“继续输入”，导致卡在二级提示符或因为粘贴/缩进规则报错。
+不要把复杂多行代码直接逐行丢给 REPL。heredoc 会原样发送所有真实换行；许多 REPL 会把每个换行当作一次行提交或继续输入，导致卡在二级提示符，或因为粘贴/缩进规则报错。
 
 **通用规则：把多行内容变成 REPL 能一次接收的形式。**
 
@@ -183,7 +186,6 @@ for i in range(3):
     print(i)
 """)
 EOF
-tta act send key --sess=pyrepl --key=enter
 tta obs screen stable --sess=pyrepl
 ```
 
