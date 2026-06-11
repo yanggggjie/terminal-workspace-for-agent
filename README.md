@@ -14,10 +14,51 @@
 
 ## What it is
 
-`tta` lets agents drive interactive terminal programs: REPLs (e.g. `GDB`, `IPython`), TUIs (e.g. `lazygit`), setup wizards (e.g. `npm create vite`), dev servers (e.g. `npm run dev`), and **coding agent CLIs** (e.g. Claude Code — see [**tta-agents**](./docs/tta-agents-docs.md)).
+`tta` lets agents drive interactive terminal programs: REPLs (e.g. `GDB`, `IPython`), TUIs (e.g. `lazygit`), setup wizards (e.g. `npm create vite`), dev servers (e.g. `npm run dev`), and **coding agent CLIs** (e.g. Claude Code, see [tta-agents](./docs/tta-agents-docs.md)).
 
 Forked from [tui-use](https://github.com/onesuper/tui-use) and modified for `tta`. Thanks to [onesuper](https://github.com/onesuper) for the original work.
 
+## Choose a mode
+
+| Mode | Best for | Docs |
+|------|----------|------|
+| `tta` | Let the current agent operate one interactive terminal program | This README |
+| `tta-agents` | Temporarily start another coding agent for one task, such as review | [tta-agents](./docs/tta-agents-docs.md) |
+| `tta-agents-orchestrator` | Use multiple coding agents as a long-horizon coder / reviewer / tester workflow | [tta-agents-orchestrator](./docs/tta-agents-orchestrator.md) |
+
+`tta` is not tied to one agent. Coding agents such as Codex and OpenCode can use it; assistant agents such as OpenClaw and Hermes can use it too, including flows like OpenClaw driving Claude Code remotely. The only hard requirement is Node.js.
+
+## Examples
+
+### tta
+
+Let an agent operate an interactive terminal.
+
+<a href="https://youtu.be/dcl5HimC-dA?si=uqlNkuK2jX0-kwJ8" target="_blank" rel="noopener noreferrer">
+  <img src="./docs/assets/tta.png" alt="tta pdb example video cover" width="720">
+</a>
+
+[IPython example](https://youtu.be/9QbJjwJP39M?si=SPvCswWN130JV8g1)
+
+### tta-agents
+
+Let an agent start another coding agent for a task.
+
+<a href="https://youtu.be/rjKqwjowtJc?si=E6Ne2YlplVcoP3Hg" target="_blank" rel="noopener noreferrer">
+  <img src="./docs/assets/tta-agents.png" alt="tta-agents review example video cover" width="720">
+</a>
+
+### tta-agents-orchestrator
+
+Let multiple coding agents collaborate through `Orchestrator.md`.
+
+<a href="https://youtu.be/rbCijIwmk0Y?si=ax7aFl6SSHW1UWz0" target="_blank" rel="noopener noreferrer">
+  <img src="./docs/assets/tta-agents-orchestrator.png" alt="tta-agents-orchestrator dev-team example video cover" width="720">
+</a>
+
+[Orchestrator.md used in the video](https://github.com/yanggggjie/rising-repo/blob/main/Orchestrator.md)
+
+[Why tta-agents?](./docs/why-tta-agents.md)
 
 ## Quick Start
 
@@ -27,13 +68,15 @@ Forked from [tui-use](https://github.com/onesuper/tui-use) and modified for `tta
 Install tta CLI:
 npm install -g terminal-tool-for-agents
 
-Install tta skills (English only — do NOT install skills/tta/zh/*.md):
-- https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
-- https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/tta-agents-skill.md
+Install tta skills from GitHub:
+Use this directory listing:
+https://api.github.com/repos/yanggggjie/terminal-tool-for-agents/contents/skills/tta?ref=main
 
-tta-agents-skill ships with tta skill in the same folder; no separate install.
+Install every top-level .md skill file in that directory.
+Do not install anything under skills/tta/zh/.
+Do not hard-code the file list; discover it from the directory listing.
 
-Confirm CLI and both skill files are installed.
+Confirm CLI and all discovered top-level skill files are installed.
 ```
 
 **Ask your agent to use tta:**
@@ -42,21 +85,13 @@ Confirm CLI and both skill files are installed.
 Use tta to run an interactive terminal program and finish the task.
 ```
 
-**Observe:**
+**Observe sessions:**
 
 ```bash
 tta sess watch
 ```
 
 Then open http://127.0.0.1:7654/.
-
-## [tta-agents](./docs/tta-agents-docs.md)
-
-Use tta to control coding agent CLIs such as Claude Code, Codex, Cursor Agent, OpenCode, Pi, and Kimi Code. This can be lightweight, such as asking one coding agent to start another for review.
-
-## [tta-agents-orchestrator](./docs/tta-agents-orchestrator.md)
-
-The full `Human -> Orchestrator -> Workers` workflow, for long multi-step tasks that benefit from separated coder / reviewer / tester roles.
 
 ## Update
 
@@ -66,33 +101,20 @@ Copy this block into your agent:
 Update tta CLI:
 npm update -g terminal-tool-for-agents
 
-Update tta skills (English only — do NOT install skills/tta/zh/*.md):
-- https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
-- https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/tta-agents-skill.md
+Update tta skills from GitHub:
+Use this directory listing:
+https://api.github.com/repos/yanggggjie/terminal-tool-for-agents/contents/skills/tta?ref=main
 
-Confirm CLI and both skills are updated.
-```
+Update every top-level .md skill file in that directory.
+Do not install anything under skills/tta/zh/.
+Do not hard-code the file list; discover it from the directory listing.
 
-## API examples
-
-Tip: Be lazy — don’t try it yourself; let the agent do it.
-
-```bash
-# Dev server: keep session, observe with obs
-tta sess start --sess=dev --cmd="npm run dev" --cwd="/path/to/project"
-tta obs screen stable --sess=dev
-
-# One-shot interactive CLI: kill when done
-tta sess start --sess=vite-once --cmd="npm create vite@latest" --cwd="/path/to/project"
-tta obs screen stable --sess=vite-once
-tta act send key --sess=vite-once --key=enter
-tta obs screen stable --sess=vite-once
-tta sess kill --sess=vite-once
+Confirm CLI and all discovered top-level skill files are updated.
 ```
 
 ## API overview
 
-All tta work happens inside a **session** (`--sess=`).
+All tta work happens inside a **session** (`--sess=`):
 
 | API | Commands | Role |
 |-----|----------|------|
@@ -104,9 +126,9 @@ All tta work happens inside a **session** (`--sess=`).
 tta sess start -> (tta act ... -> tta obs screen stable)* -> tta sess kill
 ```
 
-On failure: one line `error: <reason>`, exit code 1.
+On failure, tta prints one line: `error: <reason>` and exits with code 1.
 
-Operational details: [`skills/tta/SKILL.md`](./skills/tta/SKILL.md).
+Full command templates and error handling: [`skills/tta/SKILL.md`](./skills/tta/SKILL.md).
 
 ## Requirements
 
@@ -115,7 +137,7 @@ Operational details: [`skills/tta/SKILL.md`](./skills/tta/SKILL.md).
 
 ## Development
 
-For any local change (backend or Watch UI):
+For local development:
 
 ```bash
 just install-dev-version

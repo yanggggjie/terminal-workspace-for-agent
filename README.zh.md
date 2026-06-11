@@ -34,7 +34,7 @@ Fork 自 [tui-use](https://github.com/onesuper/tui-use) 并改造为 `tta`。感
 
 让 Agent 操作交互式终端。
 
-<a href="https://youtu.be/dcl5HimC-dA?si=uqlNkuK2jX0-kwJ8">
+<a href="https://youtu.be/dcl5HimC-dA?si=uqlNkuK2jX0-kwJ8" target="_blank" rel="noopener noreferrer">
   <img src="./docs/assets/tta.png" alt="tta pdb 示例视频封面" width="720">
 </a>
 
@@ -44,7 +44,7 @@ Fork 自 [tui-use](https://github.com/onesuper/tui-use) 并改造为 `tta`。感
 
 让 Agent 启动另一个 Coding Agent 做任务。
 
-<a href="https://youtu.be/rjKqwjowtJc?si=E6Ne2YlplVcoP3Hg">
+<a href="https://youtu.be/rjKqwjowtJc?si=E6Ne2YlplVcoP3Hg" target="_blank" rel="noopener noreferrer">
   <img src="./docs/assets/tta-agents.png" alt="tta-agents review 示例视频封面" width="720">
 </a>
 
@@ -52,7 +52,7 @@ Fork 自 [tui-use](https://github.com/onesuper/tui-use) 并改造为 `tta`。感
 
 让多个 Coding Agent 按 `Orchestrator.md` 协作。
 
-<a href="https://youtu.be/rbCijIwmk0Y?si=ax7aFl6SSHW1UWz0">
+<a href="https://youtu.be/rbCijIwmk0Y?si=ax7aFl6SSHW1UWz0" target="_blank" rel="noopener noreferrer">
   <img src="./docs/assets/tta-agents-orchestrator.png" alt="tta-agents-orchestrator dev-team 示例视频封面" width="720">
 </a>
 

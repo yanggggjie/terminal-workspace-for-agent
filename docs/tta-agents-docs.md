@@ -1,45 +1,33 @@
 # tta-agents
 
-**tta-agents** is the layer on top of [tta](../README.md) for controlling coding agent CLIs through terminal sessions. It is useful for:
+**tta-agents** is the layer on top of [tta](../README.md): it lets the current agent start, observe, and manage another coding agent CLI through tta.
+
+It is useful for temporarily delegating one clear task, for example:
 
 - Start Codex from Claude Code for a review.
 - Use Claude Code from Cursor Agent to implement a small change.
+- Ask one worker to run tests, research an issue, or validate an approach.
 
-For full long-horizon workflows with dedicated coder/reviewer/tester workers, see [`tta-agents-orchestrator.md`](./tta-agents-orchestrator.md).
+For long-horizon workflows that turn coder / reviewer / tester into a fixed process, see [tta-agents-orchestrator](./tta-agents-orchestrator.md).
 
 ## Basic workflow
 
 ```text
-start worker session -> observe screen -> send prompt -> observe until done -> summarize -> kill or keep session
+start Worker session -> observe initial screen -> send task prompt -> wait until done -> summarize -> kill or keep session
 ```
 
-Example: use Codex from another agent for review.
+The current agent is the Controller: it assigns work and summarizes results. The coding agent started by tta is the Worker: it only executes the concrete task it was given.
 
-```bash
-tta sess start --sess=worker-review-codex --cmd="codex --sandbox workspace-write --ask-for-approval never" --cwd="/Users/you/project"
-tta obs screen stable --sess=worker-review-codex
-tta act send text --sess=worker-review-codex <<'EOF'
-You are a review worker. Do NOT use tta.
+A Worker prompt should include at least:
 
-Task: Review the current working tree for correctness bugs and missing tests.
-Working directory: /Users/you/project
-
-Allowed:
-- Read files
-- Run tests
-
-Forbidden:
-- Editing files
-- git push
-- deploy
-- Using tta
-
-When done, summarize findings by severity.
-EOF
-tta act send key --sess=worker-review-codex --key=enter
-tta obs screen stable --sess=worker-review-codex
-```
+- `Task`: the concrete task to complete.
+- `Working directory`: the working directory.
+- `Allowed`: allowed actions.
+- `Forbidden`: forbidden actions, which must include `Using tta`.
+- A summary requirement for completion.
 
 ## Permissions
 
 **Clearly tell the agent using tta your permission scope (allowed/forbidden actions, directories, deploy, etc.). The coding agent controlled by tta runs in auto mode and treats prompts as authorization.**
+
+Full command templates, Worker startup commands, and error handling: [`skills/tta/tta-agents-skill.md`](../skills/tta/tta-agents-skill.md).
