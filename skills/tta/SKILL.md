@@ -1,189 +1,103 @@
 ---
 name: tta
 version: 0.1.10
-description: "Operate interactive CLI, TUI, and dev-server sessions through a PTY. Use when a command needs keystrokes, redraws a terminal UI, step-by-step screen reads, or for npm create, lazygit, npm run dev, etc. Not for plain non-interactive bash. APIs: sess, act, obs. Bundled tta-agents sub-skill when using tta to control coding agent CLIs. Bundled create-tta-agens-orchestrator sub-skill when creating Orchestrator.md."
+description: "Operate interactive CLIs, TUIs, and dev servers through a PTY. Use when a command needs keystrokes, screen reads, or continuous observation; use shell for plain non-interactive commands. APIs: sess, act, obs. Bundled tta-agents and create-tta-agens-orchestrator sub-skills."
 ---
 
 # tta - terminal tool for agents
 
-`terminal-tool-for-agents` provides the `tta` command. Use shell for plain non-interactive commands. Use `tta` for interactive programs that need a PTY.
+Use shell for plain commands. Use `tta` for interactive programs that need a PTY.
 
-Idea: start background terminals as `sess`, send keys or text as `act`, then wait for a stable screen and read results as `obs`.
-
-## Session
-
-All tta work happens inside a **session** (PTY-backed terminal instance): `tta sess start/kill/list`, `--sess=`.
-
-## tta-agents (bundled sub-skill)
-
-`tta-agents-skill.md` ships **with the tta skill** — **no separate install**.
-
-**When to enable:** If the user wants tta to drive coding agent CLIs (Claude Code, Codex, Cursor Agent, OpenCode, Pi, etc.) or asks one coding agent to use another, read and follow `tta-agents-skill.md`. For other interactive terminals (TUI, wizards, dev servers), this skill alone is enough.
-
-## create-tta-agens-orchestrator (bundled sub-skill)
-
-`create-tta-agens-orchestrator-skill.md` ships **with the tta skill** — **no separate install**.
-
-**When to enable:** If the user wants to create, update, or design `Orchestrator.md`, or wants to turn tta-agents into a project workflow based on Human -> Orchestrator -> Workers, read and follow `create-tta-agens-orchestrator-skill.md`.
+Core idea: `sess` starts a background terminal -> `act` sends keys or text -> `obs` waits for a stable screen and reads it.
 
 ## When to use
 
-**Use `tta` for:**
-
-- REPLs, e.g. `GDB`, `IPython`
-- Interactive setup, e.g. `npm create vite@latest`
-- TUIs, e.g. `lazygit`
-- Long-running processes whose output must be observed over time, e.g. `npm run dev`
-- Coding agent CLIs → enable bundled `tta-agents-skill.md`
-
-**Do not use `tta` for:**
-
-- Plain bash commands that run to completion without interaction
-- Human session observation (use `tta sess watch`; agents must not)
+- Use it for REPLs, TUIs, interactive wizards, and long-running processes whose output must be observed, such as `npm create vite@latest`, `lazygit`, and `npm run dev`.
+- Do not use it for plain bash commands that run to completion without interaction.
+- When controlling a Coding Agent CLI, read `tta-agents-skill.md` first.
+- When creating or updating `Orchestrator.md`, read `create-tta-agens-orchestrator-skill.md` first.
 
 ## Standard workflow
 
-Follow in order; do not skip steps:
-
-1. **Pick the tool** — interactive / TUI / needs step-by-step screen reads → `tta`; otherwise shell
-2. **Start and read** — `tta sess start` (see **Command writing** and **Parameter quoting**), then `tta obs screen stable --sess=<name>`
-3. **Choose input by screen**
-   - TUI menu, numbered options, `[Y/n]` → `tta act send key` (keys only, not text)
-   - Free-form shell input → quoted heredoc; real newlines in the heredoc are sent as-is, and the trailing newline usually submits:
-
-   ```bash
-   tta act send text --sess=<name> <<'EOF'
-   <your input>
-   EOF
-   ```
-
-   Must use `<<'EOF'` (quoted delimiter), not `<<EOF`, or `$`, `()`, and backticks will be expanded by the shell.
-4. **After every `act`** — `tta obs screen stable --sess=<name>` to confirm the screen updated
-5. **Kill by session type** — kill one-shot CLI/TUI when done with `tta sess kill`; keep dev-server sessions until observation ends (see **Session lifecycle** table)
-6. **Process exited** — still use `obs` for errors and final output, then `tta sess kill`
+1. Decide whether a PTY is needed. Use `tta` for interaction, keystrokes, screen reads, or continuous observation.
+2. Start a session: `tta sess start --sess=<name> --cmd="<command>" --cwd="/absolute/path"`.
+3. Read the screen: `tta obs screen stable --sess=<name>`.
+4. Choose input by screen:
+   - Menus, numbered options, confirmations: use `send key`.
+   - Free-form text or shell input: use `send text` with a quoted heredoc.
+5. After every `act`, run `obs screen stable`.
+6. Kill one-shot tasks when done; keep dev-server sessions while observing.
 
 ```text
 sess start -> obs screen stable -> (act -> obs screen stable)* -> [sess kill]
 ```
 
-## Three APIs
+## API Table
 
 | API | Commands | Role | stdout |
 |-----|----------|------|--------|
-| **sess** | `start`, `kill`, `killall`, `list`, `keys`, `watch` | Create, stop, list sessions; human watch UI | `success` (start/kill); list: `name running` / `name exited exit_code=N` |
-| **act** | `send text`, `send key` | Send input to a **running** session | `success` |
-| **obs** | `screen now`, `screen stable`, `screen scroll` | Read a session's screen (running or exited) | screen text |
+| `sess` | `start`, `kill`, `killall`, `list`, `keys`, `watch` | Manage sessions | `success` or session list |
+| `act` | `send text`, `send key` | Send input to a running session | `success` |
+| `obs` | `screen now`, `screen stable`, `screen scroll` | Read the screen of a running or exited session | screen text |
 
-On failure: one line `error: <reason>` (exit 1).
+On failure, tta prints `error: <reason>` and exits with code 1.
 
-## Session lifecycle
-
-| Session usage | Examples | Kill when done? |
-|---------------|----------|-----------------|
-| One-shot interactive CLI | `npm create vite@latest` | **Yes** |
-| One-shot interactive TUI | `lazygit` | **Yes** |
-| Long-running + observe | `npm run dev` | **No** while observing; kill when done |
-
-Coding agent workers (multi-turn context) — see `tta-agents-skill.md`.
-
-**Naming:** one lowercase word, or 2–3 words joined by `-`, e.g. `dev`, `vite-once`.
-
-**Exited sessions:** after the PTY process exits, the session stays `exited` in `sess list` until `tta sess kill`. `obs` still works; `act` fails. Read errors with `obs`, then `kill`.
-
-**Rules:**
-
-- `act` / `obs` require `--sess=` and an existing session
-- Send text: `tta act send text --sess=<name> <<'EOF'` … `EOF` (quoted heredoc, `<<'EOF'`)
-- Do not background `tta` calls; wait for each to finish
-- Do not rely on `act` stdout; use `obs` to read the screen
-- Do not use `tta sess watch`
-
-## Command writing
-
-- Each `tta` command on **one line**; do not use `\` line continuation
-- **No shell variables** in `--cmd=`, `--cwd=`, etc. (`$VAR`); use absolute paths and full command literals
-- `act send text` must use **`<<'EOF'`**; do not use `<<EOF`
-
-## Parameter quoting
-
-| Flag | Used by | Quoting |
-|------|---------|---------|
-| `--cmd=` | sess start (**required**) | always `--cmd="..."` |
-| `--cwd=` | sess start (**required**) | always `--cwd="..."`; prefer absolute paths |
-| `--sess=` | sess start/kill, act, obs | not required |
-| `--key=` | act send key | not required |
-| `--dire=` | obs screen scroll | not required |
-| send text input | act send text | always `<<'EOF'` |
-
-**`sess start` template:**
+## Command Template
 
 ```bash
 tta sess start --sess=<name> --cmd="<command>" --cwd="/absolute/path/to/project"
+tta sess kill --sess=<name>
+tta sess killall
+tta sess list
+tta sess keys
+tta sess watch   # human-only
+
+tta act send text --sess=<name> <<'EOF'
+<text>
+EOF
+tta act send key  --sess=<name> --key=<key>
+
+tta obs screen now    --sess=<name>
+tta obs screen stable --sess=<name>
+tta obs screen scroll --sess=<name> --dire=<up|down|top|bottom>
 ```
 
-Examples:
+`--cmd=` and `--cwd=` must be quoted; prefer absolute paths for `--cwd=`. Write each `tta` command on one line and do not use shell variables.
+
+## Examples
 
 ```bash
-tta sess start --sess=dev --cmd="npm run dev" --cwd="/Users/you/project"
+# One-shot interactive command: kill when done
 tta sess start --sess=vite-once --cmd="npm create vite@latest" --cwd="/Users/you/project"
-tta sess start --sess=lazy --cmd="lazygit" --cwd="/Users/you/project"
+tta obs screen stable --sess=vite-once
+tta act send key --sess=vite-once --key=enter
+tta obs screen stable --sess=vite-once
+tta sess kill --sess=vite-once
+
+# Dev server: keep while observing
+tta sess start --sess=dev --cmd="npm run dev" --cwd="/Users/you/project"
+tta obs screen stable --sess=dev
+tta sess kill --sess=dev
 ```
 
-**Common mistake:** an unquoted multi-word command is split by the shell; tta reports `too many arguments`:
-
-```bash
-# wrong
-tta sess start --sess=dev --cmd=npm run dev --cwd="/tmp"
-# correct
-tta sess start --sess=dev --cmd="npm run dev" --cwd="/tmp"
-```
-
-### `--cmd=` and `--cwd=`
-
-`sess start` runs `--cmd=` in a PTY under `--cwd=` — the same command line you would type in a terminal. tta handles platform details; do not pick or configure a shell.
-
-## Prompts, choices, and confirmations
-
-**TUI menus, numbered options, yes/no prompts — use `send key` only.** Do not use `send text` to pick TUI options.
-
-| Screen | Use |
-|--------|-----|
-| TUI menu, list, `[Y/n]`, numbered choices | `send key` — `arrow_up` / `arrow_down` to move, `enter` to select or confirm |
-| Free-form shell input | `tta act send text --sess=<name> <<'EOF'` … `EOF`; the heredoc trailing newline usually submits, so do not send `enter` by default |
-
-### Send text (heredoc)
-
-Same pattern for short and long input; `<<'EOF'` passes stdin through literally to the PTY:
+Text input must use a quoted heredoc:
 
 ```bash
 tta act send text --sess=vite-once <<'EOF'
 my-project-name
 EOF
+tta obs screen stable --sess=vite-once
 ```
 
-**Must use `<<'EOF'` (quoted delimiter)** — not `<<EOF`, or `$()`, backticks, and `$var` will be expanded by the shell. tta does not interpret escape characters; literal `\n` and `\t` are sent as-is. Use real newlines when you need newlines.
+Use keys for TUI menus and confirmations:
 
-`send text` pastes text literally; it does not type text and then wait for confirmation. Every real newline in a heredoc is written to the PTY. In line-oriented programs such as shells and REPLs, a newline usually submits the current line, similar to pressing Enter.
+```bash
+tta act send key --sess=vite-once --key=arrow_down
+tta act send key --sess=vite-once --key=enter
+tta obs screen stable --sess=vite-once
+```
 
-Only use `tta act send key --sess=<name> --key=enter` explicitly for TUI menus, confirmations, or text input that has no trailing newline but still needs submission.
-
-After every `act`, run `obs screen stable`.
-
-### Multi-line REPL input
-
-Do not send complex multi-line code to a REPL line by line. Heredocs send every real newline literally; many REPLs treat each newline as a line submission or continuation, which can leave the session at a continuation prompt or fail because of paste/indentation rules.
-
-**General rule: turn multi-line content into a form the REPL can receive as one submission.**
-
-If you send multi-line code, always keep it readable: preserve normal indentation and line breaks, do not compress it into one hard-to-read line, and do not use escaping that destroys the code structure.
-
-Priority:
-
-1. If REPL state is not needed, run a script/command from the shell instead of entering the REPL.
-2. If code must run inside the REPL, prefer a language-specific single execution entry, such as Python/IPython `exec("""...""")`, JS `.load` / `.editor` / `eval(...)`, database REPL script-loading commands, etc.
-3. If the REPL supports paste/editor mode, use it; otherwise write a temporary script file and load it in the REPL or run it from the shell.
-
-Minimal Python/IPython example:
+Do not paste multi-line REPL code line by line. Prefer scripts, load commands, or a single execution entry:
 
 ```bash
 tta act send text --sess=pyrepl <<'EOF'
@@ -195,91 +109,34 @@ EOF
 tta obs screen stable --sess=pyrepl
 ```
 
-IPython can also use `%cpaste -q`; end the pasted content with a standalone `--` line.
+## Notes
 
-After submitting, use `obs screen stable` to confirm the REPL returned to its main prompt. If it is still at a continuation prompt, send `ctrl+c`, then retry with a single execution entry or script-loading approach.
+- Use short lowercase session names or hyphenated names, such as `dev` or `vite-once`.
+- `act` / `obs` require `--sess=` and the session must exist.
+- `send text` must use `<<'EOF'`, not `<<EOF`, to avoid shell expansion of `$`, `()`, and backticks.
+- Real newlines in heredocs are sent literally; the trailing newline usually submits.
+- Menus, lists, numbered options, and `[Y/n]` confirmations must use `send key`.
+- Do not rely on `act` stdout; use `obs` to read the screen.
+- Agents must not use `tta sess watch`.
+- Exited sessions can still be read with `obs`; `act` fails. Read the final output, then `sess kill`.
 
-```bash
-# TUI menu
-tta act send key --sess=vite-once --key=arrow_down
-tta act send key --sess=vite-once --key=enter
-tta obs screen stable --sess=vite-once
-```
+## Error Handling
 
-Run `tta sess keys` for supported key names.
+| Situation | Handling |
+|-----------|----------|
+| Screen is stuck | Try `enter`, then `arrow_up` / `arrow_down` / `tab`, then `obs screen stable` |
+| `act` failed | Run `tta sess list`; if `exited`, read errors with `obs`, then `sess kill` |
+| TUI does not respond | Check whether `send text` was used by mistake; use `send key` for menus and confirmations |
+| heredoc does not finish | Cancel with `ctrl+c`; ensure the ending `EOF` is flush-left and on its own line |
+| REPL stuck at continuation prompt | Try an empty line; if still stuck, use `ctrl+c`, then switch to a script, paste/editor mode, or `exec("""...""")` |
+| Start failed | `sess list` -> `obs screen stable` to read errors -> `sess kill` |
 
-## Fallbacks
-
-**Screen stuck (menu/confirm not advancing):**
-
-1. Try `send key --key=enter` first (accept default / confirm)
-2. Still stuck → try `arrow_up` / `arrow_down` or `tab`
-3. Run `obs screen stable` again to confirm progress
-
-**`act` failed:**
-
-1. `tta sess list` — check `running` vs `exited`
-2. If `exited` → `obs screen stable` for errors, then `sess kill`
-3. If `running` but screen unchanged → check whether `send text` was used on a TUI menu by mistake
-
-**Heredoc never finishes:**
-
-1. Press `ctrl+c` to cancel the current input
-2. Check that the end marker is flush-left: no spaces or tabs before `EOF`, and no extra characters after it
-3. Check that the start and end markers match: `<<'EOF'` must end with a standalone `EOF` line
-4. If copy/paste auto-indents the block, use `printf ... | tta act send text --sess=<name>` or write a temporary file and redirect it
-
-**REPL stuck at a continuation prompt:**
-
-1. Use `obs screen stable` to check for prompts like `...:`, `...`, or `>`
-2. If the REPL is just waiting for a block terminator, try an empty line: `tta act send key --sess=<name> --key=enter`
-3. If it is still stuck or the code is misaligned, send `tta act send key --sess=<name> --key=ctrl+c`
-4. Retry using the **Multi-line REPL input** approach: single execution entry, paste/editor mode, or a temporary script
-
-**Start failed (command not found, quoting error, etc.):**
+Common quoting error:
 
 ```bash
-tta sess start --sess=bad --cmd="this-command-does-not-exist" --cwd="/Users/you/project"
-tta sess list
-tta obs screen stable --sess=bad
-tta sess kill --sess=bad
+# wrong
+tta sess start --sess=dev --cmd=npm run dev --cwd="/tmp"
+
+# correct
+tta sess start --sess=dev --cmd="npm run dev" --cwd="/tmp"
 ```
-
-## Commands
-
-```bash
-tta sess start --sess=<name> --cmd="<command>" --cwd="/absolute/path/to/project"
-tta sess kill --sess=<name>
-tta sess killall
-tta sess list
-tta sess keys
-tta sess watch   # human-only
-
-# send text: quoted heredoc
-tta act send text --sess=<name> <<'EOF'
-<text>
-EOF
-tta act send key  --sess=<name> --key=<key>
-
-tta obs screen now    --sess=<name>
-tta obs screen stable --sess=<name>
-tta obs screen scroll --sess=<name> --dire=<up|down|top|bottom>
-```
-
-## Examples
-
-```bash
-# One-shot: kill when done
-tta sess start --sess=vite-once --cmd="npm create vite@latest" --cwd="/Users/you/project"
-tta obs screen stable --sess=vite-once
-tta act send key --sess=vite-once --key=enter
-tta obs screen stable --sess=vite-once
-tta sess kill --sess=vite-once
-
-# Dev server: keep, use obs
-tta sess start --sess=dev --cmd="npm run dev" --cwd="/Users/you/project"
-tta obs screen stable --sess=dev
-tta sess kill --sess=dev
-```
-
-Coding agent worker examples — see `tta-agents-skill.md`.

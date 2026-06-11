@@ -1,50 +1,48 @@
 ---
 name: tta-agents
 version: 0.1.10
-description: "Bundled tta sub-skill for driving coding agent CLIs through tta sessions. The current agent is the controller; workers are coding agent CLIs and must not use tta. Include task, working directory, Allowed, and Forbidden in worker prompts. When creating Orchestrator.md, use the create-tta-agens-orchestrator sub-skill."
+description: "Bundled tta sub-skill for driving Coding Agent CLIs through tta sessions. The current agent is the Controller; Workers are launched Coding Agent CLIs and must not use tta. Worker prompts must include task, working directory, Allowed, and Forbidden."
 ---
 
 # tta-agents - control coding agents with tta
 
-**This file is a bundled sub-skill of the tta skill.**
+This file is a bundled sub-skill of the tta skill. Use it when the user wants tta to run or control a Coding Agent CLI.
 
-Use it when the user wants tta to run or control a coding agent CLI.
-
-If the user wants to create, update, or design `Orchestrator.md`, first read and follow `create-tta-agens-orchestrator-skill.md`.
+When creating, updating, or designing `Orchestrator.md`, read `create-tta-agens-orchestrator-skill.md` instead.
 
 ## Architecture
 
-tta-agents is a layer on top of tta: it uses tta to control coding agent CLIs. For example, start Codex from Claude Code for a review, or start Claude Code from Cursor Agent to implement a small feature.
+tta-agents uses the current agent as the Controller. The Controller starts and observes Coding Agent CLI Workers through tta. Workers do concrete work; the Controller assigns, observes, and summarizes.
+
+## API Table
+
+| API | Purpose | Rule |
+|-----|---------|------|
+| `sess` | Start, keep, or close Worker sessions | Kill one-shot Workers when done; keep only when context is useful |
+| `act` | Send prompts or keys to Workers | Send prompts with quoted heredocs; send `enter` when needed |
+| `obs` | Read Worker screens | Observe after every `act`; Controller summarizes results |
 
 ## Roles
 
 | Role | Who | Can use tta? |
 |------|-----|--------------|
-| **Controller** | **You**, the current agent using tta | **Yes** |
-| **Worker** | Coding agent CLI you start with `tta sess start` | **No** |
+| Controller | Current agent | Yes |
+| Worker | Coding Agent CLI started with `tta sess start` | No |
 
-Workers must not call tta or load tta skill. Write that rule into every worker prompt.
-
-## Required rules
-
-1. Use base tta rules for all `sess`, `act`, and `obs` commands.
-2. Worker prompts must include task, working directory, `Allowed`, and `Forbidden`.
-3. Always include `Using tta` in `Forbidden`.
-4. Treat worker prompts as authorization; do not grant permissions the user did not grant.
-5. Observe worker screens after every action and summarize results yourself.
-6. Kill one-off worker sessions when done; keep long-lived worker sessions only while their context is useful.
+Workers must not call tta or load the tta skill. State this rule in every Worker prompt.
 
 ## Standard workflow
 
-1. Choose a worker session name: `worker-<role>-<agent>`, e.g. `worker-review-codex`.
-2. Start the coding agent CLI with `tta sess start`.
+1. Choose a session name: `worker-<role>-<agent>`, such as `worker-review-codex`.
+2. Start the Coding Agent CLI with `tta sess start`.
 3. Read the initial screen with `tta obs screen stable`.
-4. Send a quoted heredoc prompt with `tta act send text`, then Enter.
-5. Wait with `tta obs screen stable`.
-6. Summarize the worker output for the user or for the next step.
-7. Kill or keep the session based on whether follow-up context is needed.
+4. Send the prompt with `tta act send text`.
+5. Send `enter` if needed.
+6. Wait for results with `tta obs screen stable`.
+7. Controller summarizes the Worker output.
+8. Kill or keep the session based on whether context is still useful.
 
-## Worker start commands (auto mode)
+## Worker Start Commands
 
 | Coding Agent | `--cmd="..."` |
 |--------------|---------------|
@@ -55,15 +53,15 @@ Workers must not call tta or load tta skill. Write that rule into every worker p
 | Pi | `pi` |
 | Kimi Code | `kimi --auto` |
 
-Use the least permissive command that satisfies the task and user authorization.
+When the task allows it, use the least permissive command.
 
-## Prompt template
+## Prompt Template
 
 ```bash
 tta act send text --sess=worker-review-codex <<'EOF'
 You are a coding worker. Do NOT use tta.
 
-Task: <concrete task>
+Task: <specific task>
 Working directory: /absolute/path/to/project
 
 Allowed:
@@ -77,6 +75,25 @@ When done, summarize what you did, files changed if any, and test status.
 EOF
 tta act send key --sess=worker-review-codex --key=enter
 ```
+
+## Notes
+
+- All `sess`, `act`, and `obs` commands still follow the base tta skill.
+- Worker prompts must include the task, working directory, `Allowed`, and `Forbidden`.
+- `Forbidden` must include `Using tta`.
+- A prompt is authorization; do not grant permissions the user did not grant.
+- Prompts use the user's language unless the user explicitly asks for another language.
+- Read the screen after every action. The Controller summarizes results instead of directly relaying unchecked screen fragments.
+
+## Error Handling
+
+| Situation | Handling |
+|-----------|----------|
+| Worker does not respond | Confirm state with `obs screen stable`; send `enter` if needed |
+| Worker reports insufficient permissions | Do not expand permissions yourself; ask the user or resend a smaller task |
+| Worker tries to use tta | Send a correction prompt and restate `Forbidden: Using tta` |
+| Worker has exited | Read final output with `obs`, then `sess kill` |
+| Output is incomplete | Continue `obs screen stable` or ask the Worker to summarize current state |
 
 ## Example
 
@@ -92,6 +109,4 @@ Forbidden: editing files, git push, deploy, using tta
 EOF
 tta act send key --sess=worker-review-codex --key=enter
 tta obs screen stable --sess=worker-review-codex
-# Read the worker result, summarize it, then kill if no follow-up is needed.
 ```
-

@@ -11,3 +11,5 @@ package-lock.json
 
 # IDE
 .vscode/
+
+AGENTS.md
