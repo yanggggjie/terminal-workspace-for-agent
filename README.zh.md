@@ -26,15 +26,39 @@ Fork 自 [tui-use](https://github.com/onesuper/tui-use) 并改造为 `tta`。感
 | `tta-agents` | 临时启动另一个 Coding Agent 做单个任务，例如 review | [tta-agents](./docs/zh/tta-agents-docs.md) |
 | `tta-agents-orchestrator` | 用多个 Coding Agent 组成 coder / reviewer / tester 等长程工作流 | [tta-agents-orchestrator](./docs/zh/tta-agents-orchestrator.md) |
 
-`tta` 不绑定某个 Agent；Codex、OpenCode 等 Coding Agent 可以使用，OpenClaw、Hermes 等助手 Agent 也可以用。硬性要求只有：安装 Node.js。
+`tta` 不绑定某个 Agent；Codex、OpenCode 等 Coding Agent 可以使用，OpenClaw、Hermes 等助手 Agent 也行，可以轻松实现 OpenClaw 操控Claude Code远程写代码。硬性要求只有：安装 Node.js。
 
 ## 示例
 
-- `tta`：让 Agent 操作交互式终端。[pdb 示例](https://youtu.be/dcl5HimC-dA?si=uqlNkuK2jX0-kwJ8)、[IPython 示例](https://youtu.be/9QbJjwJP39M?si=SPvCswWN130JV8g1)
-- `tta-agents`：让 Agent 启动另一个 Coding Agent 做任务。[review 示例](https://youtu.be/rjKqwjowtJc?si=E6Ne2YlplVcoP3Hg)
-- `tta-agents-orchestrator`：让多个 Coding Agent 按 `Orchestrator.md` 协作。[dev-team 示例](https://youtu.be/rbCijIwmk0Y?si=ax7aFl6SSHW1UWz0)、[视频中的 Orchestrator.md](https://github.com/yanggggjie/rising-repo/blob/main/Orchestrator.md)
+### tta
 
-[为什么使用 tta-agents？](./docs/zh/why-tta-agents.md)
+让 Agent 操作交互式终端。
+
+<a href="https://youtu.be/dcl5HimC-dA?si=uqlNkuK2jX0-kwJ8">
+  <img src="./docs/assets/tta.png" alt="tta pdb 示例视频封面" width="720">
+</a>
+
+[IPython 示例](https://youtu.be/9QbJjwJP39M?si=SPvCswWN130JV8g1)
+
+### tta-agents
+
+让 Agent 启动另一个 Coding Agent 做任务。
+
+<a href="https://youtu.be/rjKqwjowtJc?si=E6Ne2YlplVcoP3Hg">
+  <img src="./docs/assets/tta-agents.png" alt="tta-agents review 示例视频封面" width="720">
+</a>
+
+### tta-agents-orchestrator
+
+让多个 Coding Agent 按 `Orchestrator.md` 协作。
+
+<a href="https://youtu.be/rbCijIwmk0Y?si=ax7aFl6SSHW1UWz0">
+  <img src="./docs/assets/tta-agents-orchestrator.png" alt="tta-agents-orchestrator dev-team 示例视频封面" width="720">
+</a>
+
+[视频中的 Orchestrator.md](https://github.com/yanggggjie/rising-repo/blob/main/Orchestrator.md)
+
+## [为什么使用 tta-agents？](./docs/zh/why-tta-agents.md)
 
 ## 快速开始
 
@@ -121,9 +145,12 @@ just install-dev-version
 
 会 build、全局安装当前仓库版本；`postinstall` 会自动 `tta sess killall` 停掉旧 server。
 
-```bash
-tta sess list    # 验证 CLI
-tta sess watch   # http://127.0.0.1:7654
+
+如果你修改了 `tta`的skills，请给测试 Agent 加上这条指令：
+
+```text
+始终使用本地的tta skills，而不是安装的tta skills
+本地tta skills路径@YOURPATH/terminal-tool-for-agents/skills/tta
 ```
 
 切回 npm 上的正式版：
