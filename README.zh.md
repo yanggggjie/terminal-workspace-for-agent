@@ -27,13 +27,15 @@ Fork 自 [tui-use](https://github.com/onesuper/tui-use) 并改造为 `tta`。感
 Install tta CLI:
 npm install -g terminal-tool-for-agents
 
-Install tta skills (English only — do NOT install skills/tta/zh/*.md):
-- https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
-- https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/tta-agents-skill.md
+Install tta skills from GitHub:
+Use this directory listing:
+https://api.github.com/repos/yanggggjie/terminal-tool-for-agents/contents/skills/tta?ref=main
 
-tta-agents-skill ships with tta skill in the same folder; no separate install.
+Install every top-level .md skill file in that directory.
+Do not install anything under skills/tta/zh/.
+Do not hard-code the file list; discover it from the directory listing.
 
-Confirm CLI and both skill files are installed.
+Confirm CLI and all discovered top-level skill files are installed.
 ```
 
 **让 Agent 使用tta**：
@@ -68,11 +70,15 @@ tta sess watch
 Update tta CLI:
 npm update -g terminal-tool-for-agents
 
-Update tta skills (English only — do NOT install skills/tta/zh/*.md):
-- https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/SKILL.md
-- https://raw.githubusercontent.com/yanggggjie/terminal-tool-for-agents/main/skills/tta/tta-agents-skill.md
+Update tta skills from GitHub:
+Use this directory listing:
+https://api.github.com/repos/yanggggjie/terminal-tool-for-agents/contents/skills/tta?ref=main
 
-Confirm CLI and both skills are updated.
+Update every top-level .md skill file in that directory.
+Do not install anything under skills/tta/zh/.
+Do not hard-code the file list; discover it from the directory listing.
+
+Confirm CLI and all discovered top-level skill files are updated.
 ```
 
 ## API 示例

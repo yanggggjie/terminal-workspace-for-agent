@@ -49,7 +49,7 @@ Workers must not call tta or load the tta skill. State this rule in every Worker
 | Claude Code | `claude --dangerously-skip-permissions` |
 | Codex | `codex --sandbox workspace-write --ask-for-approval never` |
 | Cursor Agent | `agent --yolo --sandbox disabled` |
-| OpenCode | `opencode --yolo` |
+| OpenCode | `opencode` |
 | Pi | `pi` |
 | Kimi Code | `kimi --auto` |
 
