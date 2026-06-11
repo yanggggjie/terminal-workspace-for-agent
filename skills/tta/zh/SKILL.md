@@ -1,6 +1,6 @@
 ---
 name: tta
-version: 0.1.10
+version: 0.1.11
 description: "通过 PTY 操作交互式 CLI、TUI 和开发服务器。命令需要按键、读屏、持续观察时使用；普通非交互命令用 shell。API：sess、act、obs。内置 tta-agents 和 create-tta-agens-orchestrator 子 skill。"
 ---
 
