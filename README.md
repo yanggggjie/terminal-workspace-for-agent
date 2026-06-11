@@ -34,6 +34,11 @@ Forked from [tui-use](https://github.com/onesuper/tui-use) and modified for `tta
 
 Let an agent operate an interactive terminal.
 
+Steps:
+
+1. Install the `tta` CLI and skills using Quick Start below.
+2. Tell your agent directly: use `tta` with `pdb` to finish the debugging task.
+
 <a href="https://youtu.be/dcl5HimC-dA?si=uqlNkuK2jX0-kwJ8" target="_blank" rel="noopener noreferrer">
   <img src="./docs/assets/tta.png" alt="tta pdb example video cover" width="720">
 </a>
@@ -44,13 +49,27 @@ Let an agent operate an interactive terminal.
 
 Let an agent start another coding agent for a task.
 
+Steps:
+
+1. Install the `tta` CLI and skills using Quick Start below.
+2. Tell your agent directly: use `tta` to start another coding agent for review.
+
 <a href="https://youtu.be/rjKqwjowtJc?si=E6Ne2YlplVcoP3Hg" target="_blank" rel="noopener noreferrer">
   <img src="./docs/assets/tta-agents.png" alt="tta-agents review example video cover" width="720">
 </a>
 
+**Note: The `tta` Skill uses the input box by default. If you need slash commands, shortcuts, or model switching, tell the agent exactly how to use them.**
+
 ### tta-agents-orchestrator
 
 Let multiple coding agents collaborate through `Orchestrator.md`.
+
+Steps:
+
+1. Install the `tta` CLI and skills using Quick Start below.
+2. Tell your agent to create an `Orchestrator.md`.
+3. Ask the agent to strictly follow `Orchestrator.md` and become the Orchestrator.
+4. Give the agent the task you want completed.
 
 <a href="https://youtu.be/rbCijIwmk0Y?si=ax7aFl6SSHW1UWz0" target="_blank" rel="noopener noreferrer">
   <img src="./docs/assets/tta-agents-orchestrator.png" alt="tta-agents-orchestrator dev-team example video cover" width="720">
