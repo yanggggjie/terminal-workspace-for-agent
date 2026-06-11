@@ -38,12 +38,13 @@ Steps:
 
 1. Install the `tta` CLI and skills using Quick Start below.
 2. Tell your agent directly: use `tta` with `pdb` to finish the debugging task.
+3. Run `tta sess watch` to observe.
 
-<a href="https://youtu.be/dcl5HimC-dA?si=uqlNkuK2jX0-kwJ8" target="_blank" rel="noopener noreferrer">
+<a href="https://youtu.be/7WcIyX3d6qI" target="_blank" rel="noopener noreferrer">
   <img src="./docs/assets/tta.png" alt="tta pdb example video cover" width="720">
 </a>
 
-[IPython example](https://youtu.be/9QbJjwJP39M?si=SPvCswWN130JV8g1)
+[IPython example](https://youtu.be/6cZgYbIjAM8)
 
 ### tta-agents
 
@@ -53,8 +54,9 @@ Steps:
 
 1. Install the `tta` CLI and skills using Quick Start below.
 2. Tell your agent directly: use `tta` to start another coding agent for review.
+3. Run `tta sess watch` to observe.
 
-<a href="https://youtu.be/rjKqwjowtJc?si=E6Ne2YlplVcoP3Hg" target="_blank" rel="noopener noreferrer">
+<a href="https://youtu.be/J5YDg4BLOVc" target="_blank" rel="noopener noreferrer">
   <img src="./docs/assets/tta-agents.png" alt="tta-agents review example video cover" width="720">
 </a>
 
@@ -70,8 +72,9 @@ Steps:
 2. Tell your agent to create an `Orchestrator.md`.
 3. Ask the agent to strictly follow `Orchestrator.md` and become the Orchestrator.
 4. Give the agent the task you want completed.
+5. Run `tta sess watch` to observe.
 
-<a href="https://youtu.be/rbCijIwmk0Y?si=ax7aFl6SSHW1UWz0" target="_blank" rel="noopener noreferrer">
+<a href="https://youtu.be/umV0VdJ9a8g" target="_blank" rel="noopener noreferrer">
   <img src="./docs/assets/tta-agents-orchestrator.png" alt="tta-agents-orchestrator dev-team example video cover" width="720">
 </a>
 

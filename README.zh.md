@@ -38,12 +38,13 @@ Fork 自 [tui-use](https://github.com/onesuper/tui-use) 并改造为 `tta`。感
 
 1. 按下面的“快速开始”安装 `tta` CLI 和 skills。
 2. 直接告诉 Agent：用 `tta` 使用 `pdb` 完成调试任务。
+3. 运行 `tta sess watch` 进行观察。
 
-<a href="https://youtu.be/dcl5HimC-dA?si=uqlNkuK2jX0-kwJ8" target="_blank" rel="noopener noreferrer">
+<a href="https://youtu.be/7WcIyX3d6qI" target="_blank" rel="noopener noreferrer">
   <img src="./docs/assets/tta.png" alt="tta pdb 示例视频封面" width="720">
 </a>
 
-[IPython 示例](https://youtu.be/9QbJjwJP39M?si=SPvCswWN130JV8g1)
+[IPython 示例](https://youtu.be/6cZgYbIjAM8)
 
 ### tta-agents
 
@@ -53,8 +54,9 @@ Fork 自 [tui-use](https://github.com/onesuper/tui-use) 并改造为 `tta`。感
 
 1. 按下面的“快速开始”安装 `tta` CLI 和 skills。
 2. 直接告诉 Agent：使用 `tta` 开启另一个 Coding Agent 进行 review。
+3. 运行 `tta sess watch` 进行观察。
 
-<a href="https://youtu.be/rjKqwjowtJc?si=E6Ne2YlplVcoP3Hg" target="_blank" rel="noopener noreferrer">
+<a href="https://youtu.be/J5YDg4BLOVc" target="_blank" rel="noopener noreferrer">
   <img src="./docs/assets/tta-agents.png" alt="tta-agents review 示例视频封面" width="720">
 </a>
 
@@ -70,8 +72,9 @@ Fork 自 [tui-use](https://github.com/onesuper/tui-use) 并改造为 `tta`。感
 2. 告诉 Agent 创建一个 `Orchestrator.md`。
 3. 让 Agent 严格遵循 `Orchestrator.md`，成为 Orchestrator。
 4. 向 Agent 下达你要完成的任务。
+5. 运行 `tta sess watch` 进行观察。
 
-<a href="https://youtu.be/rbCijIwmk0Y?si=ax7aFl6SSHW1UWz0" target="_blank" rel="noopener noreferrer">
+<a href="https://youtu.be/umV0VdJ9a8g" target="_blank" rel="noopener noreferrer">
   <img src="./docs/assets/tta-agents-orchestrator.png" alt="tta-agents-orchestrator dev-team 示例视频封面" width="720">
 </a>
 
