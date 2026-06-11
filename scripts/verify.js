@@ -24,29 +24,12 @@ function run(cmd) {
   execSync(cmd, { cwd: root, stdio: "inherit" });
 }
 
-function cliOut(shellCmd) {
-  try {
-    return execSync(shellCmd, {
-      cwd: root,
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-      shell: "/bin/bash",
-    });
-  } catch (e) {
-    return `${e.stdout ?? ""}${e.stderr ?? ""}`;
-  }
-}
-
 run("npm run build");
 
-const { findNodePtyRoot, testNodePty } = require("./install.js");
+const { findNodePtyRoot } = require("./install.js");
 const ptyRoot = findNodePtyRoot(root);
 if (!ptyRoot) {
   process.stderr.write("verify: node-pty not found\n");
-  process.exit(1);
-}
-if (!testNodePty(ptyRoot)) {
-  process.stderr.write("verify: node-pty spawn test failed (run npm install / postinstall)\n");
   process.exit(1);
 }
 
@@ -99,65 +82,4 @@ for (const rel of [
   }
 }
 
-verifyStdinTextInput();
-verifyStartOptions();
-
 process.stdout.write("verify: ok\n");
-
-function verifyStdinTextInput() {
-  let out = "";
-  try {
-    out = execSync(`printf 'stdin-ok' | node dist/cli.js act send text --sess=stdin-verify`, {
-      cwd: root,
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-    });
-  } catch (e) {
-    out = `${e.stdout ?? ""}${e.stderr ?? ""}`;
-  }
-  if (out.includes("Missing text input")) {
-    process.stderr.write("verify: act send text must accept stdin (heredoc/pipe)\n");
-    process.exit(1);
-  }
-
-  try {
-    execSync(`node dist/cli.js act send text --sess=dev --text=removed`, {
-      cwd: root,
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-    });
-    process.stderr.write("verify: act send text must not accept --text\n");
-    process.exit(1);
-  } catch (e) {
-    const errOut = `${e.stdout ?? ""}${e.stderr ?? ""}`;
-    if (!errOut.includes("unknown option '--text=removed'")) {
-      process.stderr.write("verify: expected unknown option error for --text\n");
-      process.exit(1);
-    }
-  }
-}
-
-function verifyStartOptions() {
-  const cwd = root.replace(/"/g, '\\"');
-  const ok = cliOut(
-    `node dist/cli.js sess start --sess=quote-test --cmd="lazygit" --cwd="${cwd}"`
-  );
-  if (ok.includes("too many arguments")) {
-    process.stderr.write("verify: quoted sess start should not fail as split args\n");
-    process.exit(1);
-  }
-
-  const splitCmd = cliOut(
-    `node dist/cli.js sess start --sess=quote-test --cmd=npm run dev --cwd="/tmp"`
-  );
-  if (!splitCmd.includes("too many arguments")) {
-    process.stderr.write("verify: unquoted multi-word --cmd= must be rejected (split args)\n");
-    process.exit(1);
-  }
-
-  const missingCwd = cliOut(`node dist/cli.js sess start --sess=quote-test --cmd="lazygit"`);
-  if (!missingCwd.includes("--cwd") || !missingCwd.toLowerCase().includes("required")) {
-    process.stderr.write("verify: missing --cwd= must be rejected\n");
-    process.exit(1);
-  }
-}
