@@ -14,10 +14,27 @@
 
 ## 是什么
 
-`tta` 让 Agent 能够使用驱动交互式终端程序：REPL（如 `GDB`、`IPython`）、TUI（如 `lazygit`）、安装向导（如 `npm create vite`）、开发服务（如 `npm run dev`），以及 **Coding Agent CLI**（如 `Claude Code`，见 [**tta-agents**](./docs/zh/tta-agents-docs.md)）。
+`tta` 让 Agent 能够驱动交互式终端程序：REPL（如 `GDB`、`IPython`）、TUI（如 `lazygit`）、安装向导（如 `npm create vite`）、开发服务（如 `npm run dev`），以及 **Coding Agent CLI**（如 `Claude Code`，见 [tta-agents](./docs/zh/tta-agents-docs.md)）。
 
 Fork 自 [tui-use](https://github.com/onesuper/tui-use) 并改造为 `tta`。感谢 [onesuper](https://github.com/onesuper) 的原始工作。
 
+## 选择使用方式
+
+| 方式 | 适合场景 | 文档 |
+|------|----------|------|
+| `tta` | 让当前 Agent 操作一个交互式终端程序 | 本 README |
+| `tta-agents` | 临时启动另一个 Coding Agent 做单个任务，例如 review | [tta-agents](./docs/zh/tta-agents-docs.md) |
+| `tta-agents-orchestrator` | 用多个 Coding Agent 组成 coder / reviewer / tester 等长程工作流 | [tta-agents-orchestrator](./docs/zh/tta-agents-orchestrator.md) |
+
+`tta` 不绑定某个 Agent；Codex、OpenCode 等 Coding Agent 可以使用，OpenClaw、Hermes 等助手 Agent 也可以用。硬性要求只有：安装 Node.js。
+
+## 示例
+
+- `tta`：让 Agent 操作交互式终端。[pdb 示例](https://youtu.be/dcl5HimC-dA?si=uqlNkuK2jX0-kwJ8)、[IPython 示例](https://youtu.be/9QbJjwJP39M?si=SPvCswWN130JV8g1)
+- `tta-agents`：让 Agent 启动另一个 Coding Agent 做任务。[review 示例](https://youtu.be/rjKqwjowtJc?si=E6Ne2YlplVcoP3Hg)
+- `tta-agents-orchestrator`：让多个 Coding Agent 按 `Orchestrator.md` 协作。[dev-team 示例](https://youtu.be/rbCijIwmk0Y?si=ax7aFl6SSHW1UWz0)、[视频中的 Orchestrator.md](https://github.com/yanggggjie/rising-repo/blob/main/Orchestrator.md)
+
+[为什么使用 tta-agents？](./docs/zh/why-tta-agents.md)
 
 ## 快速开始
 
@@ -38,29 +55,19 @@ Do not hard-code the file list; discover it from the directory listing.
 Confirm CLI and all discovered top-level skill files are installed.
 ```
 
-**让 Agent 使用tta**：
+**让 Agent 使用 tta**：
 
 ```text
 Use tta to run an interactive terminal program and finish the task.
 ```
 
-**观察**
+**观察 session**：
 
 ```bash
 tta sess watch
 ```
 
 然后打开 http://127.0.0.1:7654/。
-
-## [tta-agents](./docs/zh/tta-agents-docs.md)
-
-用 tta 控制 Claude Code、Codex、Cursor Agent、OpenCode、Pi、Kimi Code 等 Coding Agent CLI。它可以很轻量，比如让一个 Coding Agent 临时启动另一个 Coding Agent 做 review。
-
-
-## [tta-agents-orchestrator](./docs/zh/tta-agents-orchestrator.md)
-
-完整 `Human -> Orchestrator -> Workers` 工作流，适合长程、多步骤、需要 coder / reviewer / tester 等关注点分离的任务。
-
 
 ## 更新
 
@@ -81,26 +88,9 @@ Do not hard-code the file list; discover it from the directory listing.
 Confirm CLI and all discovered top-level skill files are updated.
 ```
 
-## API 示例
-
-Tip：Be lazy，不要自己动手尝试，让 Agent 来做。
-
-```bash
-# Dev server：保持 session，用 obs 观察
-tta sess start --sess=dev --cmd="npm run dev" --cwd="/path/to/project"
-tta obs screen stable --sess=dev
-
-# 一次性交互 CLI：完成后 kill
-tta sess start --sess=vite-once --cmd="npm create vite@latest" --cwd="/path/to/project"
-tta obs screen stable --sess=vite-once
-tta act send key --sess=vite-once --key=enter
-tta obs screen stable --sess=vite-once
-tta sess kill --sess=vite-once
-```
-
 ## API 概览
 
-tta 的一切操作都在 **session** 内进行（`--sess=`）。
+tta 的一切操作都在 **session** 内进行（`--sess=`）：
 
 | API | 命令 | 作用 |
 |-----|------|------|
@@ -114,7 +104,7 @@ tta sess start -> (tta act ... -> tta obs screen stable)* -> tta sess kill
 
 失败时输出一行 `error: <reason>`，退出码为 1。
 
-操作细节见 [`skills/tta/zh/SKILL.md`](./skills/tta/zh/SKILL.md)。
+完整命令模板和错误处理见 [`skills/tta/zh/SKILL.md`](./skills/tta/zh/SKILL.md)。
 
 ## 环境要求
 
@@ -123,7 +113,7 @@ tta sess start -> (tta act ... -> tta obs screen stable)* -> tta sess kill
 
 ## 开发
 
-无论改了后端还是 Watch UI，本地开发统一执行：
+本地开发统一执行：
 
 ```bash
 just install-dev-version
