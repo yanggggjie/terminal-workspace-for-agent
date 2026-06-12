@@ -22,6 +22,7 @@ Core idea: `sess` starts a background terminal -> `act` sends keys or text -> `o
 1. Decide whether a PTY is needed. Use `tta` for interaction, keystrokes, screen reads, or continuous observation.
 2. Start a session: `tta sess start --sess=<name> --cmd="<command>" --cwd="/absolute/path"`.
 3. Read the screen: `tta obs screen stable --sess=<name>`.
+   - For monitoring terminal apps that keep changing without user input, such as `htop`, use `tta obs screen now --sess=<name>` instead of waiting for `stable`.
 4. Choose input by screen:
    - Menus, numbered options, confirmations: use `send key`.
    - Free-form text or shell input: use `send text` with a quoted heredoc.
@@ -117,6 +118,7 @@ tta obs screen stable --sess=pyrepl
 - Real newlines in heredocs are sent literally; the trailing newline usually submits.
 - Menus, lists, numbered options, and `[Y/n]` confirmations must use `send key`.
 - Do not rely on `act` stdout; use `obs` to read the screen.
+- Monitoring apps such as `htop` keep refreshing and will not stabilize; observe them with `obs screen now`, not `obs screen stable`.
 - Agents must not use `tta sess watch`.
 - Exited sessions can still be read with `obs`; `act` fails. Read the final output, then `sess kill`.
 

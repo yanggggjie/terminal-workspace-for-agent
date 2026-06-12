@@ -14,19 +14,23 @@
 
 ## What it is
 
-`tta` lets agents drive interactive terminal programs: REPLs (e.g. `GDB`, `IPython`), TUIs (e.g. `lazygit`), setup wizards (e.g. `npm create vite`), dev servers (e.g. `npm run dev`), and **coding agent CLIs** (e.g. Claude Code, see [tta-agents](./docs/tta-agents-docs.md)).
+`tta` is a terminal control tool for agents. Your agent can be a coding agent such as Claude Code, or an assistant agent such as OpenClaw. With `tta`, it can interactively open terminal programs, observe the screen, send input, and wait for output to stabilize.
+
+It is useful for tasks that a normal shell cannot finish in one shot: debugging with `pdb`, operating `IPython`, using TUIs such as `lazygit`, or starting another **coding agent** such as Claude Code. See [tta-agents](./docs/tta-agents-docs.md).
+
+If you are still manually operating interactive terminal programs, manually starting multiple coding agents, passing context, assigning tasks, collecting results, or waiting for one agent to finish before assigning the next task, try automating it with `tta`.
 
 Forked from [tui-use](https://github.com/onesuper/tui-use) and modified for `tta`. Thanks to [onesuper](https://github.com/onesuper) for the original work.
 
-## Choose a mode
+## Flexible options
 
 | Mode | Best for | Docs |
 |------|----------|------|
-| `tta` | Let the current agent operate one interactive terminal program | This README |
-| `tta-agents` | Temporarily start another coding agent for one task, such as review | [tta-agents](./docs/tta-agents-docs.md) |
-| `tta-agents-orchestrator` | Use multiple coding agents as a long-horizon coder / reviewer / tester workflow | [tta-agents-orchestrator](./docs/tta-agents-orchestrator.md) |
+| `tta` | Control a single interactive terminal program, such as debugging, menu selection, or viewing dev server output | This README |
+| `tta-agents` | Delegate one clear task to another coding agent, such as using Codex for review | [tta-agents](./docs/tta-agents-docs.md) |
+| `tta-agents-orchestrator` | Orchestrate multiple coding agents for long-horizon work, such as coding, review, and testing | [tta-agents-orchestrator](./docs/tta-agents-orchestrator.md) |
 
-`tta` is not tied to one agent. Coding agents such as Codex and OpenCode can use it; assistant agents such as OpenClaw and Hermes can use it too, including flows like OpenClaw driving Claude Code remotely. The only hard requirement is Node.js.
+`tta` is not tied to one agent. Coding agents such as Codex and OpenCode can use it; assistant agents such as OpenClaw and Hermes can use it too, for example to let OpenClaw remotely control Claude Code. The only hard requirement is Node.js.
 
 ## Examples
 
@@ -34,15 +38,15 @@ Forked from [tui-use](https://github.com/onesuper/tui-use) and modified for `tta
 
 Let an agent operate an interactive terminal.
 
+<a href="https://youtu.be/7WcIyX3d6qI" target="_blank" rel="noopener noreferrer">
+  <img src="./docs/assets/tta.png" alt="tta pdb example video cover" width="720">
+</a>
+
 Steps:
 
 1. Install the `tta` CLI and skills using Quick Start below.
 2. Tell your agent directly: use `tta` with `pdb` to finish the debugging task.
 3. Run `tta sess watch` to observe.
-
-<a href="https://youtu.be/7WcIyX3d6qI" target="_blank" rel="noopener noreferrer">
-  <img src="./docs/assets/tta.png" alt="tta pdb example video cover" width="720">
-</a>
 
 [IPython example](https://youtu.be/6cZgYbIjAM8)
 
@@ -50,21 +54,25 @@ Steps:
 
 Let an agent start another coding agent for a task.
 
+<a href="https://youtu.be/J5YDg4BLOVc" target="_blank" rel="noopener noreferrer">
+  <img src="./docs/assets/tta-agents.png" alt="tta-agents review example video cover" width="720">
+</a>
+
 Steps:
 
 1. Install the `tta` CLI and skills using Quick Start below.
 2. Tell your agent directly: use `tta` to start another coding agent for review.
 3. Run `tta sess watch` to observe.
 
-<a href="https://youtu.be/J5YDg4BLOVc" target="_blank" rel="noopener noreferrer">
-  <img src="./docs/assets/tta-agents.png" alt="tta-agents review example video cover" width="720">
-</a>
-
 **Note: The `tta` Skill uses the input box by default. If you need slash commands, shortcuts, or model switching, tell the agent exactly how to use them.**
 
 ### tta-agents-orchestrator
 
 Let multiple coding agents collaborate through `Orchestrator.md`.
+
+<a href="https://youtu.be/umV0VdJ9a8g" target="_blank" rel="noopener noreferrer">
+  <img src="./docs/assets/tta-agents-orchestrator.png" alt="tta-agents-orchestrator dev-team example video cover" width="720">
+</a>
 
 Steps:
 
@@ -74,11 +82,9 @@ Steps:
 4. Give the agent the task you want completed.
 5. Run `tta sess watch` to observe.
 
-<a href="https://youtu.be/umV0VdJ9a8g" target="_blank" rel="noopener noreferrer">
-  <img src="./docs/assets/tta-agents-orchestrator.png" alt="tta-agents-orchestrator dev-team example video cover" width="720">
-</a>
-
 [Orchestrator.md used in the video](https://github.com/yanggggjie/rising-repo/blob/main/Orchestrator.md)
+
+**What is not suitable,**
 
 [Why tta-agents?](./docs/why-tta-agents.md)
 
