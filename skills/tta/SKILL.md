@@ -1,6 +1,6 @@
 ---
 name: tta
-version: 0.1.11
+version: 0.1.12
 description: "Operate interactive CLIs, TUIs, and dev servers through a PTY. Use when a command needs keystrokes, screen reads, or continuous observation; use shell for plain non-interactive commands. APIs: sess, act, obs. Bundled tta-agents and create-tta-agens-orchestrator sub-skills."
 ---
 

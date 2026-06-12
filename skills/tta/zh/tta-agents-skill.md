@@ -1,6 +1,6 @@
 ---
 name: tta-agents
-version: 0.1.11
+version: 0.1.12
 description: "tta skill 内置子 skill，用 tta session 驱动 Coding Agent CLI。当前 Agent 是 Controller；Worker 是被启动的 Coding Agent CLI，不能使用 tta。Worker prompt 必须包含任务、工作目录、Allowed、Forbidden。"
 ---
 
