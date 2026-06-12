@@ -85,8 +85,6 @@ Fork 自 [tui-use](https://github.com/onesuper/tui-use) 并改造为 `tta`。感
 [视频中的 Orchestrator.md](https://github.com/yanggggjie/rising-repo/blob/main/Orchestrator.md)
 
 
-**什么是不适合的，**
-
 ## [为什么使用 tta-agents？](./docs/zh/why-tta-agents.md)
 
 ## 快速开始

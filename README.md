@@ -84,8 +84,6 @@ Steps:
 
 [Orchestrator.md used in the video](https://github.com/yanggggjie/rising-repo/blob/main/Orchestrator.md)
 
-**What is not suitable,**
-
 [Why tta-agents?](./docs/why-tta-agents.md)
 
 ## Quick Start
