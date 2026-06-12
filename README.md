@@ -48,7 +48,7 @@ Steps:
 2. Tell your agent directly: use `tta` with `pdb` to finish the debugging task.
 3. Run `tta sess watch` to observe.
 
-[IPython example](https://youtu.be/6cZgYbIjAM8)
+[IPython example recording](https://youtu.be/6cZgYbIjAM8)
 
 ### tta-agents
 
@@ -73,6 +73,7 @@ Let multiple coding agents collaborate through `Orchestrator.md`.
 <a href="https://youtu.be/umV0VdJ9a8g" target="_blank" rel="noopener noreferrer">
   <img src="./docs/assets/tta-agents-orchestrator.png" alt="tta-agents-orchestrator dev-team example video cover" width="720">
 </a>
+[Orchestrator.md used in the video](https://github.com/yanggggjie/rising-repo/blob/main/Orchestrator.md)
 
 Steps:
 
@@ -82,7 +83,7 @@ Steps:
 4. Give the agent the task you want completed.
 5. Run `tta sess watch` to observe.
 
-[Orchestrator.md used in the video](https://github.com/yanggggjie/rising-repo/blob/main/Orchestrator.md)
+[Example recording: using Orchestrator to have Claude Code and Codex play Gomoku](https://youtu.be/52gOo3hJYv4)
 
 [Why tta-agents?](./docs/why-tta-agents.md)
 
